@@ -2,12 +2,12 @@
     <div class="container">
 
       <!-- Display a loading message if loading -->
-      <h1 v-if="data.loading" class="display-4">Loading...</h1>
+      <h1 v-if="store.state.loading" class="display-4">Loading...</h1>
 
       <!-- Display an error if we got one -->
-      <div v-if="data.error">
+      <div v-if="store.state.error">
         <h1 class="display-4">Oops!</h1>
-        <p class="lead">{{data.error}}</p>
+        <p class="lead">{{store.state.error}}</p>
         <button class="btn btn-primary" @click="resetToken">Try Again &gt;</button>
       </div>
 
@@ -15,7 +15,7 @@
       <div v-else>
 
         <!-- If we dont have a token ask the user to authorize with YNAB -->
-        <form v-if="!data.ynab.token">
+        <form v-if="!store.state.ynab.token">
           <h1 class="display-4">Congrats!</h1>
           <p class="lead">You have successfully started a new YNAB API Application!</p>
           <ul>
@@ -34,7 +34,7 @@
         </form>
 
         <!-- Otherwise if we have a token, show the budget select -->
-        <Budgets v-else-if="!data.budgetId" :budgets="data.budgets" :selectBudget="selectBudget" />
+        <Budgets v-else-if="!data.budgetId" :budgets="store.state.budgets" :selectBudget="selectBudget" />
 
         <!-- If a budget has been selected, display transactions from that budget -->
         <div v-else>
@@ -47,14 +47,14 @@
 </template>
 
 <script>
-import { defineComponent, reactive, onMounted } from 'vue'
+import { defineComponent, reactive, onMounted, inject } from 'vue'
 import * as ynab from 'ynab'
-
-import ynabconfig from '../../ynabconfig.json'
 
 import Budgets from '../components/Budgets.vue'
 import Transactions from '../components/Transactions.vue'
 import Categories from '../components/Categories.vue'
+
+
 
 
 export default defineComponent({
@@ -62,56 +62,38 @@ export default defineComponent({
   components: { Budgets, Transactions },
   setup() {
     let data = reactive({
-      ynab: {
-        clientId: ynabconfig.clientId,
-        redirectUri: ynabconfig.redirectUri,
-        token: null,
-        api: null,
-      },
-      loading: false,
-      error: null,
-      budgetId: null,
-      budgets: [],
-      transactions: []
+        budgetId: null,
+        transactions: []
       })
+    
+    const store = inject('store')
 
     onMounted(() => {
-      data.ynab.token = findYNABToken()
-      if (data.ynab.token) {
-        data.api = new ynab.api(data.ynab.token)
+      store.state.ynab.token = findYNABToken()
+      if (store.state.ynab.token) {
+        store.state.api = new ynab.api(store.state.ynab.token)
       
         if (!data.budgetId) {
-          getBudgets()
+          store.methods.getBudgets()
         } else {
           selectBudget(data.budgetId)
         }
       }
     })
 
-    function getBudgets() {
-      data.loading = true
-      data.error = null
-      data.api.budgets.getBudgets().then((res) => {
-        data.budgets = res.data.budgets
-      }).catch((err) => {
-        data.error = err.error.detail
-      }).finally(() => {
-        data.loading = false
-      })
-    }
 
     // data selects a budget and gets all the transactions in that budget
     function selectBudget(id) {
-      data.loading = true
-      data.error = null
+      store.state.loading = true
+      store.state.error = null
       data.budgetId = id
       data.transactions = []
-      data.api.transactions.getTransactions(id).then((res) => {
+      store.state.api.transactions.getTransactions(id).then((res) => {
         data.transactions = res.data.transactions
       }).catch((err) => {
-        data.error = err.error.detail
+        store.state.error = err.error.detail
       }).finally(() => {
-        data.loading = false
+        store.state.loading = false
       })
     }
 
@@ -119,7 +101,7 @@ export default defineComponent({
     // https://api.youneedabudget.com/#outh-applications
     function authorizeWithYNAB(e) {
       e.preventDefault()
-      const uri = `https://app.youneedabudget.com/oauth/authorize?client_id=${data.ynab.clientId}&redirect_uri=${data.ynab.redirectUri}&response_type=token`
+      const uri = `https://app.youneedabudget.com/oauth/authorize?client_id=${store.state.ynab.clientId}&redirect_uri=${store.state.ynab.redirectUri}&response_type=token`
       location.replace(uri)
     }
 
@@ -147,17 +129,17 @@ export default defineComponent({
     // Clear the token and start authorization over
     function resetToken() {
       sessionStorage.removeItem('ynab_access_token')
-      data.ynab.token = null
-      data.error = null
+      store.state.ynab.token = null
+      store.state.error = null
     }
 
     return {
       data,
-      getBudgets,
       selectBudget,
       authorizeWithYNAB,
       findYNABToken,
-      resetToken
+      resetToken,
+      store
     }
   }
 })

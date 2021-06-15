@@ -2,23 +2,45 @@
   <div class="container">
     <h5>Transaction Setup</h5>
 
-<q-input
-  filled
-  v-model="data.price"
-  label="Enter amount of transaction:"
-  mask="#.##"
-  fill-mask="#"
-  reverse-fill-mask
-  input-class="text-right"
-/>
-<ul>
-  <li v-for="(budget, index) in budgets" :key="index">{{ budget }}</li>
-</ul>
+    <div class="row">
+      <div class="col-md">
+        <q-input
+          class="q-pa-md float-md-start"
+          filled
+          v-model="data.price"
+          label="Enter amount of transaction:"
+          mask="#.##"
+          fill-mask="#"
+          reverse-fill-mask
+          input-class="text-right"
+          style="width: 100%"
+        />
+        <q-select
+          class="q-pa-md float-md-end"
+          filled
+          v-model="store.state.purchasingBudget"
+          option-value="id"
+          option-label="name"
+          stack-label
+          input-debounce="0"
+          label="Who made the purchase:"
+          :options="store.state.budgets"
+          style="width: 100%"
+        />
+      </div>
+      <div class="col-md q-pa-md">
+        <q-date
+          v-model="store.state.transactionDate"
+          today-btn
+        />
+      </div>
+    </div>
   </div>
 </template>
 
 <script>
-import { reactive } from 'vue'
+import { reactive, inject } from 'vue'
+
 export default {
   props: ['budgets'],
   setup() {
@@ -35,8 +57,12 @@ export default {
       price: ''
     })
   
+    const store = inject('store')
+
+    const options = {}
     return {
-      data
+      data,
+      store
     }
   }
 }
