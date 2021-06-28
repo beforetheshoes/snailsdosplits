@@ -11,6 +11,12 @@ const routes = [
           { 
             path: '/home/child',
             component: () => import('pages/Home/Child.vue'),
+            children: [
+              {
+                path: '/home/child/grandchild',
+                component: () => import('pages/Home/GrandChild.vue')
+              }
+            ]
           }
         ]
       },

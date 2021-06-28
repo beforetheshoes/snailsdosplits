@@ -1,8 +1,8 @@
 <template>
     <q-layout view="lHh lpr lFf">
-      <q-footer bordered class="bg-white text-primary">
+      <q-footer bordered class="bg-deep-purple-9 text-white">
         <q-tabs  
-            active-color="primary" 
+            active-color="white" 
             indicator-color="transparent" 
             class="text-grey"
             mobile-arrows

@@ -24,27 +24,34 @@
 
           <!-- If we dont have a token ask the user to authorize with YNAB -->
           <form v-if="!store.state.ynab.token">
-            <div class="form-group">
+            <div class="form-group text-center">
               <h2>Hello!</h2>
-              <p class="lead">If you would like to use data App, please authorize with YNAB!</p>
-              <button @click="store.methods.authorizeWithYNAB" class="btn btn-primary">Authorize data App With YNAB &gt;</button>
+              <p class="lead q-pb-xl">Before we begin, please authorize with YNAB!</p>
+              <q-btn 
+                @click="store.methods.authorizeWithYNAB" 
+                padding="xs lg"
+                color="primary"
+                label="Authorize with YNAB"
+              />
             </div>
           </form>
 
           <FirstPane v-else :budgets="store.state.budgets"></FirstPane>        
-      <div class="row">
-        <div class="column items-center q-pa-xl" style="width: 100%">
-          <div class="col">
-            <q-btn
-              padding="xs lg"
-              color="primary"
-              :disable="nextStepButtonDisabled()"
-              to="/home/child"
-              label="Next Step"
-            />
+            <div v-if="store.state.ynab.token" class="row">
+              <div class="column items-center q-pa-xl" style="width: 100%">
+                <div class="row">
+                  <div class="col">
+                  <q-btn
+                    padding="xs lg"
+                    color="primary"
+                    :disable="nextStepButtonDisabled()"
+                    to="/home/child"
+                    label="Next Step"
+                  />
+                  </div>
+                </div>
+              </div>
           </div>
-        </div>
-    </div>
         </div>
       </div>
     </page-body>
@@ -81,7 +88,8 @@ export default {
       if (store.state.transactionAccount && 
           store.state.transactionPayee &&
           store.state.transactionAmount &&
-          store.state.transactionDate
+          store.state.transactionDate &&
+          store.state.transactionDate <= store.todaysDate.value
       ) {
         return false
       } else {

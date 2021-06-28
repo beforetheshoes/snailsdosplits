@@ -1,6 +1,7 @@
 import ynabconfig from '../../ynabconfig.json'
 
-import { reactive } from 'vue'
+import { reactive, computed } from 'vue'
+import { store } from 'quasar/wrappers'
 
 const state = reactive({
     ynab: {
@@ -12,15 +13,28 @@ const state = reactive({
     budgets: [],
     payees: [],
     accounts: [],
+    splittersAccounts: [],
     transactions: [],
     loading: false,
     error: null,
     purchasingBudget: null,
+    splittingBudget: null,
     transactionDate: null,
     transactionAmount: null,
+    purchaserAmount: null,
+    splitterAmount: null,
     transactionPayee: null,
     transactionAccount: null,
-    transactionNotes: null
+    transactionNotes: null,
+    transactionCleared: false,
+    allPurchaserCategories: [],
+    allSplitterCategories: [],
+    purchaserCategorySplits: [],
+    splitterCategorySplits: [],
+    splittersAccountInPurchasersBudget: null,
+    purchasersAccountInSplittersBudget: null,
+    splittersCategoryInPurchasersBudget: null,
+    purchasersCategoryInSplittersBudget: null
 })
 
 const methods = {
@@ -56,6 +70,16 @@ const methods = {
             state.loading = false
         })
     },
+
+    getSplittersAccounts() {
+        state.api.accounts.getAccounts(state.splittingBudget.id).then((res) => {
+            state.splittersAccounts = res.data.accounts
+        }).catch((err) => {
+            state.error = err.error.detail
+        }).finally(() => {
+            state.loading = false
+        })
+    },
     
     getPayeesAndAccounts() {
         state.loading = true
@@ -65,9 +89,76 @@ const methods = {
         if (state.purchasingBudget) {
             this.getPayees()
             this.getAccounts()
+            this.getSplittersAccounts()
         } else {
             console.log("You need to select a budget before you see the payees.")
         }
+    },
+
+    checkSplittersAccountInPurchasersBudget() {
+        if (state.splittingBudget.name) {
+            const search = state.splittingBudget.name + ' | YNABFS'
+            const splitYNABFS = state.accounts.find(o => o.name === search)
+            if (splitYNABFS) {
+                state.splittersAccountInPurchasersBudget = splitYNABFS
+            } 
+        } 
+    },
+
+    checkPurchasersAccountInSplittersBudget() {
+        if (state.purchasingBudget.name) {
+            const search = state.purchasingBudget.name + ' | YNABFS'
+            const splitYNABFS = state.splittersAccounts.find(o => o.name === search)
+            if (splitYNABFS) {
+                state.purchasersAccountInSplittersBudget = splitYNABFS
+            } 
+        } 
+    },
+
+    getPurchaserCategories() {
+        state.api.categories.getCategories(state.purchasingBudget.id).then((res) => {
+            const categoryGroups = res.data.category_groups
+            Object.entries(categoryGroups).forEach(categoryGroupEntry => {
+                const[categoryGroupKey, categoryGroupValue] = categoryGroupEntry;
+                if (categoryGroupValue.name !== 'Internal Master Category' && 
+                    categoryGroupValue.name !== 'Credit Card Payments' &&
+                    categoryGroupValue.name !== 'Hidden Categories') {
+                    Object.entries(categoryGroupValue["categories"]).forEach(eachCategory => {
+                        const[eachCategoryKey, eachCategoryValue] = eachCategory
+                        if (eachCategoryValue["hidden"] === false && eachCategoryValue["deleted"] === false) {
+                            state.allPurchaserCategories.push(eachCategoryValue)
+                        }
+                    })
+                }
+            })
+        }).catch((err) => {
+            state.error = err.error.detail
+        }).finally(() => {
+            state.loading = false
+        })
+    },
+    
+    getSplitterCategories() {
+        state.api.categories.getCategories(state.splittingBudget.id).then((res) => {
+            const categoryGroups = res.data.category_groups
+            Object.entries(categoryGroups).forEach(categoryGroupEntry => {
+                const[categoryGroupKey, categoryGroupValue] = categoryGroupEntry;
+                if (categoryGroupValue.name !== 'Internal Master Category' && 
+                    categoryGroupValue.name !== 'Credit Card Payments' &&
+                    categoryGroupValue.name !== 'Hidden Categories') {
+                    Object.entries(categoryGroupValue["categories"]).forEach(eachCategory => {
+                        const[eachCategoryKey, eachCategoryValue] = eachCategory
+                        if (eachCategoryValue["hidden"] === false && eachCategoryValue["deleted"] === false) {
+                            state.allSplitterCategories.push(eachCategoryValue)
+                        }
+                    })
+                }
+            })
+        }).catch((err) => {
+            state.error = err.error.detail
+        }).finally(() => {
+            state.loading = false
+        })
     },
 
     // Method to find a YNAB token
@@ -75,7 +166,12 @@ const methods = {
     findYNABToken() {
         let token = null
         const search = window.location.hash.substring(2).replace(/&/g, '","').replace(/=/g,'":"')
-        if (search && search !== '' && search != 'home' && search != 'home/child') {
+        if (search && search !== '' && 
+            search != 'home' && 
+            search != 'home/child' &&
+            search != 'home/' &&
+            search != 'home/child/grandchild'
+        ) {
           // Try to get access_token from the hash returned by OAuth
            const params = JSON.parse('{"' + search + '"}', function(key, value) {
              return key === '' ? value : decodeURIComponent(value)
@@ -106,7 +202,18 @@ const methods = {
     }
 }
 
+const todaysDate = computed (() => {
+    let today = new Date();
+    const dd = String(today.getDate()).padStart(2, '0');
+    const mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
+    const yyyy = today.getFullYear();
+
+    today = yyyy + '/' + mm + '/' + dd
+    return today
+  })
+
 export default {
     state,
-    methods
+    methods,
+    todaysDate
 }
