@@ -5,8 +5,10 @@ import { store } from 'quasar/wrappers'
 
 const state = reactive({
     ynab: {
-        clientId: ynabconfig.clientId,
-        redirectUri: ynabconfig.redirectUri,
+        //clientId: ynabconfig.clientId,
+        //redirectUri: ynabconfig.redirectUri,
+        clientId: process.env.CLIENT_ID,
+        redirectUri: process.env.REDIRECT_URI,
         token: null,
         api: null,
     },
