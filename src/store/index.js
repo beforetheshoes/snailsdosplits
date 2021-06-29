@@ -1,4 +1,4 @@
-import ynabconfig from '../../ynabconfig.json'
+//import ynabconfig from '../../ynabconfig.json'
 
 import { reactive, computed } from 'vue'
 import { store } from 'quasar/wrappers'
