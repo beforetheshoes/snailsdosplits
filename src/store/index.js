@@ -212,8 +212,32 @@ const todaysDate = computed (() => {
     return today
   })
 
+  const purchaserCategoryTotal = computed(() => {
+    if (state.purchaserCategorySplits.length > 0) {
+      const toReturn = state.purchaserCategorySplits.reduce(function(prev, cur) {
+        return prev + cur.amount
+      }, 0)
+      return toReturn
+    } else {
+      return null
+    }
+  })
+
+  const splitterCategoryTotal = computed(() => {
+    if (state.splitterCategorySplits.length > 0) {
+      const toReturn = state.splitterCategorySplits.reduce(function(prev, cur) {
+        return prev + cur.amount
+      }, 0)
+      return toReturn
+    } else {
+      return null
+    }
+  })
+
 export default {
     state,
     methods,
-    todaysDate
+    todaysDate,
+    purchaserCategoryTotal,
+    splitterCategoryTotal
 }

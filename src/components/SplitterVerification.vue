@@ -9,12 +9,12 @@
 
                     <q-item>
                         <q-item-section>
-                        <q-item-label lines="2">Account ID</q-item-label>
-                        <q-item-label caption>{{ store.state.purchasersAccountInSplittersBudget.id }}</q-item-label>
+                        <q-item-label lines="2">Account Name</q-item-label>
+                        <q-item-label caption>{{ store.state.purchasersAccountInSplittersBudget.name }}</q-item-label>
                         </q-item-section>
 
                         <q-item-section side>
-                        <q-icon v-if="store.state.purchasersAccountInSplittersBudget.id" name="info" color="green" />
+                        <q-icon v-if="store.state.purchasersAccountInSplittersBudget.name" name="info" color="green" />
                         <q-icon v-else name="info" />
                         </q-item-section>
                     </q-item>

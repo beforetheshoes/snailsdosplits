@@ -9,12 +9,12 @@
 
                     <q-item>
                         <q-item-section>
-                        <q-item-label lines="2">Account ID</q-item-label>
-                        <q-item-label caption>{{ store.state.transactionAccount.id }}</q-item-label>
+                        <q-item-label lines="2">Account Name</q-item-label>
+                        <q-item-label caption>{{ store.state.transactionAccount.name }}</q-item-label>
                         </q-item-section>
 
                         <q-item-section side>
-                        <q-icon v-if="store.state.transactionAccount.id" name="info" color="green" />
+                        <q-icon v-if="store.state.transactionAccount.name" name="info" color="green" />
                         <q-icon v-else name="info" />
                         </q-item-section>
                     </q-item>

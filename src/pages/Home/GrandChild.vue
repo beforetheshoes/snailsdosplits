@@ -9,16 +9,52 @@
 
     <page-body class="text-center">
         <q-btn 
-          v-if="data.purchaserTransactionResponse === 'Successful'"
-          class="q-ma-xl"  
+          v-if="data.purchaserTransactionResponse === 'Successful' && 
+                data.purchaserBalanceTransactionResponse === 'Successful' && 
+                data.splitterTransactionResponse === 'Successful'"
+          class="q-mt-xl q-mb-md"  
           outline 
           rounded 
           icon="verified"
           color="positive" 
           label="Success" />
+        <q-btn 
+          v-if="data.purchaserTransactionResponse === 'Failed' || 
+                data.purchaserBalanceTransactionResponse === 'Failed' || 
+                data.splitterTransactionResponse === 'Failed'"
+          class="q-mt-xl q-mb-md"  
+          outline 
+          rounded 
+          icon="error"
+          color="negative" 
+          label="Transaction Failed" />
+        <div v-if="data.purchaserTransactionResponse === 'Failed' || 
+                data.purchaserBalanceTransactionResponse === 'Failed' || 
+                data.splitterTransactionResponse === 'Failed'"
+        >
+            <p v-if="data.purchaserTransactionResponse === 'Failed'">
+                {{ data.purchaserTransactionErrorDetail }}
+            </p>
+            <p v-if="data.purchaserBalanceTransactionResponse === 'Failed'">
+                {{ data.purchaserBalanceTransactionErrorDetail }}
+            </p>
+            <p v-if="data.splitterTransactionResponse === 'Failed'">
+                {{ data.splitterTransactionErrorDetail }}
+            </p>
+        </div>
         <div v-if="store.state.ynab.token && store.state.purchasingBudget">
             <h5>Please verify transactions before posting</h5>
-            <!-- <matching-verification></matching-verification> -->
+            <q-btn
+                v-if="data.finalValidationPassed"
+                class="q-mb-lg"
+                color="primary"
+                @click="submitAllTransactions()"
+                label="Submit Transactions"
+            />
+            <div>
+                <p class="text-weight-light q-mx-sm">All status icons should be green before submitting transactions.</p>
+                <p class="text-weight-thin q-mx-sm">Category IDs will be blank if there are any subtransactions.</p>
+            </div>
             <purchaser-match-verification
                 :date="date"
                 :memo="memo"
@@ -40,49 +76,15 @@
             >
             </splitter-verification>
         </div>
-
-        <div>
-            <q-btn
-            v-if="store.state.ynab.token && store.state.purchaserAmount && data.purchaserTransactionResponse === null"
-            class="q-my-md"
-            padding="xs lg"
-            color="primary"
-            @click="createPurchaserTransaction()"
-            label="Submit Purchaser Transaction"
-            />
-        </div>
-        <div>
-            <q-btn
-            v-if="store.state.ynab.token && store.state.purchaserAmount && data.purchaserBalanceTransactionResponse === null"
-            class="q-my-md"
-            padding="xs lg"
-            color="primary"
-            @click="createPurchaserBalanceTransaction()"
-            label="Submit Purchaser Balance Transaction"
-            />
-        </div>
-        <div>
-            <q-btn
-            v-if="store.state.ynab.token && store.state.purchaserAmount && data.splitterTransactionResponse === null"
-            class="q-my-md"
-            padding="xs lg"
-            color="primary"
-            @click="createSplitterTransaction()"
-            label="Submit Splitter Transaction"
-            />
-        </div>
         <div>
             <q-btn
             v-if="store.state.ynab.token && store.state.purchaserAmount"
-            class="q-my-md"
-            padding="xs lg"
+            class="q-mt-md q-mb-xl"
             color="primary"
             to="/home/child"
             label="Back"
             />
         </div>
-        <pre>{{ store.state.purchaserCategorySplits }}</pre>
-        <pre>{{ store.state.splitterCategorySplits }}</pre>
     </page-body>
   </page>
 </template>
@@ -90,16 +92,13 @@
 <script>
 import { reactive, inject, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
-import * as ynab from 'ynab'
 import PurchaserVerification from 'src/components/PurchaserVerification.vue'
-import MatchingVerification from 'src/components/MatchingVerification.vue'
 import PurchaserMatchVerification from 'src/components/PurchaserMatchVerification.vue'
 import SplitterVerification from 'src/components/SplitterVerification.vue'
 
 export default {
   components: { 
-      PurchaserVerification, 
-      //MatchingVerification, 
+      PurchaserVerification,
       PurchaserMatchVerification,
       SplitterVerification },
   name: 'GrandChild',
@@ -110,7 +109,11 @@ export default {
         splitterSubtransactions: [],
         splitterTransactionResponse: null,
         purchaserCategoryId: null,
-        purchaserBalanceTransactionResponse: null
+        purchaserBalanceTransactionResponse: null,
+        finalValidationPassed: false,
+        purchaserTransactionErrorDetail: null,
+        purchaserBalanceTransactionErrorDetail: null,
+        splitterTransactionErrorDetail: null
     })
 
     const store = inject('store')
@@ -125,6 +128,7 @@ export default {
       if (store.state.splitterCategorySplits && store.state.purchaserCategorySplits) {
         getPurchaserSubtransactions()
         getSplitterSubtransactions()
+        finalValidation()
       }
     })
 
@@ -196,7 +200,6 @@ export default {
                     })
                 }
             }
-            console.log(data.splitterSubtransactions)
         } else {
             return false
         }
@@ -226,12 +229,12 @@ export default {
 
     function createPurchaserTransaction() {
         const transaction = purchaserTransaction.value
-        console.log(transaction)
         store.state.api.transactions.createTransaction(store.state.purchasingBudget.id, { transaction }).then((res) => {
            data.purchaserTransactionResponse = "Successful"
         }).catch((err) => {
            store.state.error = err.error.detail
            data.purchaserTransactionResponse = "Failed"
+           data.purchaserTransactionErrorDetail = err.error.detail
         }).finally(() => {
            store.state.loading = false
         })
@@ -259,12 +262,12 @@ export default {
 
     function createPurchaserBalanceTransaction() {
         const transaction = purchaserBalanceTransaction.value
-        console.log(transaction)
         store.state.api.transactions.createTransaction(store.state.purchasingBudget.id, { transaction }).then((res) => {
             data.purchaserBalanceTransactionResponse = "Successful"
         }).catch((err) => {
             store.state.error = err.error.detail
             data.purchaserBalanceTransactionResponse = "Failed"
+            data.purchaserBalanceTransactionErrorDetail = err.error.detail
         }).finally(() => {
             store.state.loading = false
         })
@@ -293,15 +296,51 @@ export default {
 
     function createSplitterTransaction() {
         const transaction = splitterTransaction.value
-        console.log(transaction)
         store.state.api.transactions.createTransaction(store.state.splittingBudget.id, { transaction }).then((res) => {
            data.splitterTransactionResponse = "Successful"
         }).catch((err) => {
            store.state.error = err.error.detail
            data.splitterTransactionResponse = "Failed"
+           data.splitterTransactionErrorDetail = err.error.detail
         }).finally(() => {
            store.state.loading = false
         })
+    }
+
+    function finalValidation() {
+        if (
+                store.state.transactionAccount.id &&
+                store.state.transactionAmount &&
+                store.state.transactionPayee.id &&
+                store.state.transactionPayee.name &&
+                memo.value &&
+                cleared.value &&
+                date.value &&
+                data.purchaserCategoryId === null && 
+                data.purchaserSubtransactions.length > 1 &&
+                store.state.purchasersAccountInSplittersBudget.id &&
+                (
+                    (splitterCategoryId.value === null && data.splitterSubtransactions.length > 1) || 
+                    (splitterCategoryId.value && data.splitterSubtransactions.length === 0)
+                ) &&
+                store.state.splitterAmount &&
+                store.state.splittersCategoryInPurchasersBudget.id &&
+                store.state.splittersAccountInPurchasersBudget.id
+        ){
+            data.finalValidationPassed = true
+        } else {
+            data.finalValidationPassed = false
+        }
+    }
+
+    function submitAllTransactions() {
+        if (data.finalValidationPassed) {
+            createPurchaserTransaction()
+            createPurchaserBalanceTransaction()
+            createSplitterTransaction()
+        } else {
+            alert("Final validation failed. No transactions have been attempted. Please verify transactions before posting.")
+        }
     }
 
     return {
@@ -318,7 +357,9 @@ export default {
       splitterTransaction,
       createPurchaserTransaction,
       createPurchaserBalanceTransaction,
-      createSplitterTransaction
+      createSplitterTransaction,
+      finalValidation,
+      submitAllTransactions
     }
   }
 }

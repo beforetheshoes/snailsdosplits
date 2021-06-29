@@ -283,12 +283,6 @@
           label="Final Step"
         />
       </div>
-      <pre>allowNextStep: Value={{allowNextStep}}, Type={{ typeof(allowNextStep) }}</pre>
-      <pre>transactionAmount: Value={{store.state.transactionAmount}}, Type={{ typeof(store.state.transactionAmount)}}</pre>
-      <pre>purchCatSplits: Value={{store.state.purchaserCategorySplits.length}}, Type={{typeof(store.state.purchaserCategorySplits.length)}}</pre>
-      <pre>splitCatSplits: Value={{store.state.splitterCategorySplits.length}}, Type={{typeof(store.state.splitterCategorySplits.length)}}</pre>
-      <pre>purchaserAmountRemaining: Value={{data.purchaserAmountRemaining}}, Type={{typeof(data.purchaserAmountRemaining)}}</pre>
-      <pre>splitterAmountRemaining: Value={{data.splitterAmountRemaining}}, Type={{typeof(data.splitterAmountRemaining)}}</pre>
     </page-body>
   </page>
 </template>
@@ -335,9 +329,11 @@ export default {
         data.purchaserAmountRemaining = Number(store.state.purchaserAmount)
         data.splitterAmountRemaining = Number(store.state.splitterAmount)
         calculateAmountRemaining()
+        validateAndSave()
       }
 
     })
+
 
     onBeforeUnmount(() => {
       checkCategoriesinEachBudget()
@@ -418,7 +414,6 @@ export default {
     function checkCategoriesinEachBudget() {
       if (purchaserCategoryOptions.value && splitterCategoryOptions.value) {
         if (store.state.purchasingBudget) {
-          console.log("Running")
           const search = store.state.purchasingBudget.name + ' | YNABFS'
           const splitYNABFS = splitterCategoryOptions.value.find(o => o.name === search)
             if (splitYNABFS) {
@@ -426,7 +421,6 @@ export default {
             } 
         }  
         if (store.state.splittingBudget) {
-          console.log("Running")
           const search = store.state.splittingBudget.name + ' | YNABFS'
           const purchaseYNABFS = purchaserCategoryOptions.value.find(o => o.name === search)
             if (purchaseYNABFS) {
@@ -435,28 +429,6 @@ export default {
         }  
       }
     }
-
-    const purchaserCategoryTotal = computed(() => {
-      if (store.state.purchaserCategorySplits.length > 0) {
-        const toReturn = store.state.purchaserCategorySplits.reduce(function(prev, cur) {
-          return prev + cur.amount
-        }, 0)
-        return toReturn
-      } else {
-        return null
-      }
-    })
-
-    const splitterCategoryTotal = computed(() => {
-      if (store.state.splitterCategorySplits.length > 0) {
-        const toReturn = store.state.splitterCategorySplits.reduce(function(prev, cur) {
-          return prev + cur.amount
-        }, 0)
-        return toReturn
-      } else {
-        return null
-      }
-    })
 
     const allowNextStep = computed(() => {
       if (
@@ -476,7 +448,7 @@ export default {
       if (store.state.purchaserCategorySplits.length === 1) {
         data.purchaserAmountRemaining = 0
       } else if (store.state.purchaserCategorySplits.length > 1) {
-        data.purchaserAmountRemaining = Number((((store.state.purchaserAmount * 100) - (purchaserCategoryTotal.value * 100)) / 100).toFixed(2))
+        data.purchaserAmountRemaining = Number((((store.state.purchaserAmount * 100) - (store.purchaserCategoryTotal.value * 100)) / 100))
       } else {
         data.purchaserAmountRemaining = null
       }
@@ -484,7 +456,7 @@ export default {
       if (store.state.splitterCategorySplits.length === 1) {
         data.splitterAmountRemaining = 0
       } else if (store.state.splitterCategorySplits.length > 0) {
-        data.splitterAmountRemaining = Number((((store.state.splitterAmount * 100) - (splitterCategoryTotal.value * 100)) / 100).toFixed(2))
+        data.splitterAmountRemaining = Number((((store.state.splitterAmount * 100) - (store.splitterCategoryTotal.value * 100)) / 100).toFixed(2))
       } else {
         data.splitterAmountRemaining = null
       }
@@ -500,8 +472,6 @@ export default {
       splitterCategoryOptions,
       allowNextStep,
       calculateAmountRemaining,
-      purchaserCategoryTotal,
-      splitterCategoryTotal,
       checkCategoriesinEachBudget
     }
   }
