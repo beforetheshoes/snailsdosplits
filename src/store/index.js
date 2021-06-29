@@ -7,8 +7,8 @@ const state = reactive({
     ynab: {
         //clientId: ynabconfig.clientId,
         //redirectUri: ynabconfig.redirectUri,
-        clientId: process.env.CLIENT_ID,
-        redirectUri: process.env.REDIRECT_URI,
+        clientId: CLIENT_ID,
+        redirectUri: REDIRECT_URI,
         token: null,
         api: null,
     },
