@@ -1,8 +1,8 @@
 {
-  "name": "ynabquasar",
+  "name": "ynabforsnails",
   "version": "0.0.1",
-  "description": "A Quasar Framework app",
-  "productName": "ynabquasar",
+  "description": "Split purchases between YNAB budgets",
+  "productName": "YNAB For Snails",
   "author": "Ryan Williams <oneryanleewilliams@gmail.com>",
   "private": true,
   "scripts": {
@@ -13,7 +13,6 @@
     "@quasar/extras": "^1.0.0",
     "axios": "^0.21.1",
     "core-js": "^3.6.5",
-    "dotenv": "^10.0.0",
     "quasar": "^2.0.0-beta.1",
     "vee-validate": "^4.4.5",
     "vue-currency-input": "^2.0.0",
@@ -22,6 +21,7 @@
   "devDependencies": {
     "@babel/eslint-parser": "^7.13.14",
     "@quasar/app": "^3.0.0-beta.1",
+    "@quasar/quasar-app-extension-dotenv": "^1.1.0",
     "electron": "^13.1.2",
     "eslint": "^7.14.0",
     "eslint-config-prettier": "^8.1.0",

@@ -111,7 +111,7 @@
                 multiple
                 use-chips
                 input-debounce="0"
-                label="Who was the payee:"
+                label="Choose one or more categories:"
                 :options="purchaserCategoryOptions"
                 option-value="id"
                 option-label="name"
@@ -212,7 +212,7 @@
                 multiple
                 use-chips
                 input-debounce="0"
-                label="Who was the payee:"
+                label="Choose one or more categories:"
                 :options="splitterCategoryOptions"
                 option-value="id"
                 option-label="name"

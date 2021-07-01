@@ -5,8 +5,8 @@ import { store } from 'quasar/wrappers'
 
 const state = reactive({
     ynab: {
-        clientId: '316bf0a1a9b1ab5991fcedc7fa306ec1bc605f28a2d6d95e2dbddd49aca2de8d',
-        redirectUri: "https://ynabforsnails.netlify.app",
+        clientId: process.env.CLIENT_ID,
+        redirectUri: process.env.REDIRECT_URI,
         token: null,
         api: null,
     },
