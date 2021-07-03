@@ -69,7 +69,7 @@
       </q-input>
       <currency-input
         v-model="store.state.transactionAmount"
-        :options="{ currency: 'USD', autoDecimalDigits: true, valueRange: {min:0,max:undefined}, autoSign:true }"
+        :options="{ currency: 'USD', autoDecimalDigits: true, valueRange: {min:0,max:undefined}, autoSign:true, exportValueAsInteger: true}"
         class="q-my-md"
       />
       <div class="q-gutter-sm text-center">

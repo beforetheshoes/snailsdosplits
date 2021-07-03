@@ -7,14 +7,14 @@
       </template>
     </page-header>
 
-    <page-body class="text-center">
+    <page-body class="text-center" style="min-height:1000px">
 
       <q-btn 
         @click="data.cardTransactionSplit = true"
         style="width: 90%"
         class="q-my-md"
       >
-        Click to split ${{ store.state.transactionAmount }}
+        Click to split ${{ store.state.transactionAmount / 100 }}
       </q-btn>
 
       <q-dialog v-model="data.cardTransactionSplit" @hide="validateAndSave">
@@ -22,7 +22,7 @@
           <q-card-section>
             <div class="row no-wrap items-center">
               <div class="col text-h6 ellipsis">
-                Total ${{ store.state.transactionAmount }}
+                Total ${{ store.state.transactionAmount / 100 }}
               </div>
             </div>
           </q-card-section>
@@ -43,7 +43,7 @@
                   <div class="col-8">
                     <currency-input v-if="data.splitRatio==='Other'"
                       v-model="data.otherPurchaseRatio"
-                      :options="{ currency: 'USD', autoDecimalDigits: true }"
+                      :options="{ currency: 'USD', autoDecimalDigits: true, exportValueAsInteger: true }"
                     />
                   </div>
                 </div>
@@ -52,13 +52,13 @@
               <q-item>
                 <q-item-section>{{ store.state.purchasingBudget['name'] }}</q-item-section>
                 <q-item-section side>
-                  <q-item-label caption>${{ purchaserRatio }}</q-item-label>
+                  <q-item-label caption>${{ Number(purchaserRatio) / 100 }}</q-item-label>
                 </q-item-section>
               </q-item>
               <q-item>
                 <q-item-section>{{ store.state.splittingBudget['name'] }}</q-item-section>
                 <q-item-section side>
-                  <q-item-label caption>${{ splitterRatio }}</q-item-label>
+                  <q-item-label caption>${{ Number(splitterRatio) / 100 }}</q-item-label>
                 </q-item-section>
               </q-item>
             </div>
@@ -84,7 +84,7 @@
             <span class="q-pl-lg text-bold">{{ store.state.purchasingBudget['name'] }}</span>
           </div>
           <div class="col-6 text-right">
-            <q-badge v-if="store.state.purchaserAmount" class="q-mr-sm" align="middle" color="deep-purple-5">${{ store.state.purchaserAmount }}</q-badge>
+            <q-badge v-if="store.state.purchaserAmount" class="q-mr-sm" align="middle" color="deep-purple-5">${{ store.state.purchaserAmount /100 }}</q-badge>
           </div>
         </q-item>
 
@@ -93,7 +93,7 @@
             <q-card-section>
               <div class="row no-wrap items-center">
                 <div class="col text-h6 ellipsis">
-                  Total ${{ store.state.purchaserAmount }}
+                  Total ${{ store.state.purchaserAmount / 100 }}
                 </div>
               </div>
             </q-card-section>
@@ -135,12 +135,12 @@
                 <currency-input
                   v-model="category.amount"
                   dense
-                  :options="{ currencyDisplay: 'hidden',
+                  :options="{ currencyDisplay: 'symbol',
                               currency: 'USD', 
                               autoDecimalDigits: true, 
-                              valueRange: { min: 0, max: store.state.purchaserAmount } 
+                              valueRange: { min: 0, max: store.state.purchaserAmount }, 
+                              exportValueAsInteger: true
                             }"
-                  prefix="$"
                   @blur="calculateAmountRemaining()"
                   @focus="calculateAmountRemaining()"
                   @keyup.enter="calculateAmountRemaining()"
@@ -148,14 +148,15 @@
             </div>
             <div class="col-4 text-right" v-else>
                 <q-input
-                  v-model="store.state.purchaserCategorySplits[0].amount"
-                  input-class="text-right text-bold"
+                  class="text-right text-black vertical-align!"
                   prefix="$"
                   dense
                   disable
                   readonly
                   filled
-                />
+                  color="black"
+                  :label="'$' + store.state.purchaserAmount / 100 "
+                ></q-input>
             </div>
           </q-item>
           <div class="col">
@@ -164,7 +165,7 @@
                 class="q-ml-md text-weight-regular"
                 :class="data.purchaserAmountRemaining >= 0 ? 'text-black' : 'text-red'"
               >
-                ${{ data.purchaserAmountRemaining }}
+                ${{ data.purchaserAmountRemaining / 100 }}
               </span>
             </p>
           </div>
@@ -185,7 +186,7 @@
             <span class="q-pl-lg text-bold">{{ store.state.splittingBudget['name'] }}</span>
           </div>
           <div class="col-6 text-right">
-            <q-badge class="q-mr-sm" align="middle" color="deep-purple-5">${{ store.state.splitterAmount }}</q-badge>
+            <q-badge class="q-mr-sm" align="middle" color="deep-purple-5">${{ store.state.splitterAmount / 100 }}</q-badge>
           </div>
         </q-item>
 
@@ -194,7 +195,7 @@
             <q-card-section>
               <div class="row no-wrap items-center">
                 <div class="col text-h6 ellipsis">
-                  Total ${{ store.state.splitterAmount }}
+                  Total ${{ store.state.splitterAmount / 100 }}
                 </div>
               </div>
             </q-card-section>
@@ -240,7 +241,8 @@
                   :options="{ currencyDisplay: 'hidden', 
                               currency: 'USD', 
                               autoDecimalDigits: true, 
-                              valueRange: { min:0, max: store.state.splitterAmount } 
+                              valueRange: { min:0, max: store.state.splitterAmount },
+                              exportValueAsInteger: true 
                             }"
                   @blur="calculateAmountRemaining()"
                   @focus="calculateAmountRemaining()"
@@ -249,15 +251,15 @@
             </div>
             <div class="col-4 text-right" v-else>
                 <q-input
-                  v-model="store.state.splitterAmount"
-                  input-class="text-bold text-right"
+                  class="text-right text-black vertical-align!"
                   prefix="$"
                   dense
                   disable
-                  
+                  readonly
                   filled
-                  outlined
-                />
+                  color="black"
+                  :label="'$' + store.state.splitterAmount / 100 "
+                ></q-input>
             </div>
           </q-item>
           <div class="col">
@@ -266,7 +268,7 @@
                 class="q-ml-md text-weight-regular"
                 :class="data.splitterAmountRemaining >= 0 ? 'text-black' : 'text-red'"
               >
-                ${{ data.splitterAmountRemaining }}
+                ${{ data.splitterAmountRemaining / 100 }}
               </span>
             </p>
           </div>
@@ -277,6 +279,7 @@
       <div v-if="allowNextStep">
         <q-btn
           padding="xs lg"
+          class="q-mb-xl"
           color="primary"
           to="/home/child/grandchild"
           @click="checkCategoriesinEachBudget()"
@@ -448,7 +451,7 @@ export default {
       if (store.state.purchaserCategorySplits.length === 1) {
         data.purchaserAmountRemaining = 0
       } else if (store.state.purchaserCategorySplits.length > 1) {
-        data.purchaserAmountRemaining = Number((((store.state.purchaserAmount * 100) - (store.purchaserCategoryTotal.value * 100)) / 100))
+        data.purchaserAmountRemaining = Number(((store.state.purchaserAmount * 100) - (store.purchaserCategoryTotal.value * 100)) / 100)
       } else {
         data.purchaserAmountRemaining = null
       }
@@ -456,7 +459,7 @@ export default {
       if (store.state.splitterCategorySplits.length === 1) {
         data.splitterAmountRemaining = 0
       } else if (store.state.splitterCategorySplits.length > 0) {
-        data.splitterAmountRemaining = Number((((store.state.splitterAmount * 100) - (store.splitterCategoryTotal.value * 100)) / 100).toFixed(2))
+        data.splitterAmountRemaining = Number(((store.state.splitterAmount * 100) - (store.splitterCategoryTotal.value * 100)) / 100)
       } else {
         data.splitterAmountRemaining = null
       }

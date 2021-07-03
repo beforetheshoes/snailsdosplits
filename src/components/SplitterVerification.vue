@@ -33,7 +33,7 @@
                     <q-item>
                         <q-item-section>
                         <q-item-label lines="1">Amount</q-item-label>
-                        <q-item-label caption>${{ store.state.splitterAmount }}</q-item-label>
+                        <q-item-label caption>${{ store.state.splitterAmount / 100 }}</q-item-label>
                         </q-item-section>
 
                         <q-item-section side>

@@ -172,7 +172,7 @@ export default {
             for (let i = 0; i < store.state.purchaserCategorySplits.length; i++) {
                 if (store.state.purchaserCategorySplits[i].amount > 0) {
                     data.purchaserSubtransactions.push({ 
-                        amount: -(store.state.purchaserCategorySplits[i].amount * 1000),
+                        amount: -(store.state.purchaserCategorySplits[i].amount * 10),
                         category_id: store.state.purchaserCategorySplits[i].id,
                     })
                 }
@@ -181,7 +181,7 @@ export default {
             let splitterCategory = store.state.allPurchaserCategories.find(o => o.name === splitterCategoryToFind)
             if (splitterCategory) {
                 data.purchaserSubtransactions.push({
-                    amount: -(store.state.splitterAmount * 1000),
+                    amount: -(store.state.splitterAmount * 10),
                     category_id: splitterCategory.id
                 })
             }
@@ -195,7 +195,7 @@ export default {
             for (let i = 0; i < store.state.splitterCategorySplits.length; i++) {
                 if (store.state.splitterCategorySplits[i].amount > 0) {
                     data.splitterSubtransactions.push({ 
-                        amount: -(store.state.splitterCategorySplits[i].amount * 1000),
+                        amount: -(store.state.splitterCategorySplits[i].amount * 10),
                         category_id: store.state.splitterCategorySplits[i].id,
                     })
                 }
@@ -214,7 +214,7 @@ export default {
             return {
                 account_id: store.state.transactionAccount.id,
                 date: date.value,
-                amount: -(store.state.transactionAmount * 1000),
+                amount: -(store.state.transactionAmount * 10),
                 payee_id: store.state.transactionPayee.id,
                 payee_name: store.state.transactionPayee.name,
                 category_id: data.purchaserCategoryId,
@@ -249,7 +249,7 @@ export default {
             return {
                 account_id: store.state.splittersAccountInPurchasersBudget.id,
                 date: date.value,
-                amount: store.state.splitterAmount * 1000,
+                amount: store.state.splitterAmount * 10,
                 payee_name: "YNABFS Split",
                 category_id: store.state.splittersCategoryInPurchasersBudget.id,
                 memo: memo.value,
@@ -282,7 +282,7 @@ export default {
             return {
                 account_id: store.state.purchasersAccountInSplittersBudget.id,
                 date: date.value,
-                amount: -(store.state.splitterAmount * 1000),
+                amount: -(store.state.splitterAmount * 10),
                 payee_name: store.state.transactionPayee.name,
                 category_id: splitterCategoryId.value,
                 memo: memo.value,
