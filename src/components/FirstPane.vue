@@ -120,15 +120,18 @@ export default {
       } else {
         console.log("You need to select a budget before we can load payees.")
       }
+      const searchRegex = new RegExp(/Transfer :.*/, 'i')
       if (val === '') {
         update(() => {
-          data.payeeOtions = store.state.payees
+          //let obj = store.state.payees.filter(function (payee) { return !searchRegex.test(payee.name) })
+          let obj = store.state.payees.filter(v => (!searchRegex.test(v.name)))
+          data.payeeOtions = obj
         })
-        return
+        //return
       }
       update(() => {  
         const needle = val.toLowerCase()
-        data.payeeOptions = store.state.payees.filter(v => v.name.toLowerCase().indexOf(needle) > -1)
+        data.payeeOptions = store.state.payees.filter(v => (!searchRegex.test(v.name)) && (v.name.toLowerCase().indexOf(needle) > -1))
       })
     }
 

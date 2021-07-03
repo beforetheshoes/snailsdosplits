@@ -52,13 +52,13 @@
               <q-item>
                 <q-item-section>{{ store.state.purchasingBudget['name'] }}</q-item-section>
                 <q-item-section side>
-                  <q-item-label caption>${{ Number(purchaserRatio) / 100 }}</q-item-label>
+                  <q-item-label caption>${{ purchaserRatio / 100 }}</q-item-label>
                 </q-item-section>
               </q-item>
               <q-item>
                 <q-item-section>{{ store.state.splittingBudget['name'] }}</q-item-section>
                 <q-item-section side>
-                  <q-item-label caption>${{ Number(splitterRatio) / 100 }}</q-item-label>
+                  <q-item-label caption>${{ splitterRatio / 100 }}</q-item-label>
                 </q-item-section>
               </q-item>
             </div>
@@ -337,7 +337,6 @@ export default {
 
     })
 
-
     onBeforeUnmount(() => {
       checkCategoriesinEachBudget()
     })
@@ -345,20 +344,20 @@ export default {
     const purchaserRatio = computed(() => { 
       switch (data.splitRatio) {
         case '25/75':
-          return (Math.round(((store.state.transactionAmount * .25) + Number.EPSILON) * 100) / 100).toFixed(2)
+          return (Math.round((store.state.transactionAmount * .25) + Number.EPSILON) * 10) / 10
         case '50/50':
-          return (Math.round(((store.state.transactionAmount * .5) + Number.EPSILON) * 100) / 100).toFixed(2)
+          return (Math.round((store.state.transactionAmount * .5) + Number.EPSILON) * 10) / 10
         case '75/25':
-          return (Math.round(((store.state.transactionAmount * .75) + Number.EPSILON) * 100) / 100).toFixed(2)
+          return (Math.round((store.state.transactionAmount * .75) + Number.EPSILON) * 10) / 10
         case 'Other':
           return data.otherPurchaseRatio
         default:
-          return (Math.round(((store.state.transactionAmount * .5) + Number.EPSILON) * 100) / 100).toFixed(2)
+          return (Math.round((store.state.transactionAmount * .5) + Number.EPSILON) * 10) / 10
       }
     })
 
     const splitterRatio = computed(() => { 
-      return (((store.state.transactionAmount * 100) - (purchaserRatio.value * 100)) / 100).toFixed(2)
+      return (((store.state.transactionAmount * 100) - (purchaserRatio.value * 100)) / 100)
     })
 
     function validateAndSave() {
@@ -378,14 +377,17 @@ export default {
       if (store.state.allPurchaserCategories.length > 0) {
         const result = []
         const map = new Map()
+        const searchRegex = new RegExp(/.* [|] YNABFS/, 'i')
         for (const item of store.state.allPurchaserCategories) {
-          if (!map.has(item.id)) {
-            map.set(item.id, true)
-            result.push({
-              id: item.id,
-              name: item.name,
-              amount: null
-            })
+          if (!searchRegex.test(item.name)) {
+            if (!map.has(item.id)) {
+              map.set(item.id, true)
+              result.push({
+                id: item.id,
+                name: item.name,
+                amount: null
+              })
+            }
           }
         }      
         return result
@@ -398,14 +400,17 @@ export default {
       if (store.state.allSplitterCategories.length > 0) {
         const result = []
         const map = new Map()
+        const searchRegex = new RegExp(/.* [|] YNABFS/, 'i')
         for (const item of store.state.allSplitterCategories) {
-          if (!map.has(item.id)) {
-            map.set(item.id, true)
-            result.push({
-              id: item.id,
-              name: item.name,
-              amount: null
-            })
+          if (!searchRegex.test(item.name)) {
+            if (!map.has(item.id)) {
+              map.set(item.id, true)
+              result.push({
+                id: item.id,
+                name: item.name,
+                amount: null
+              })
+            }
           } 
         }      
         return result

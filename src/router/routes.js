@@ -23,7 +23,10 @@ const routes = [
       {
         path: '/home/:catchAll(.*)*',
         component: () => import('pages/Home/Home.vue')
-      }
+      },
+    { path: '/info', 
+      component: () => import('pages/Home/Info.vue')
+    }
     ]
   },
 

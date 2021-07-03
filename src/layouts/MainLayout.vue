@@ -13,6 +13,11 @@
                 label="Home"
                 icon="las la-home" 
           />
+          <q-route-tab 
+                to="/info"
+                label="How It Works"
+                icon="las la-question-circle" 
+          />
         </q-tabs>
       </q-footer>
 
