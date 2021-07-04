@@ -79,12 +79,19 @@
           label="CATEGORY AMOUNTS MUST ADD UP TO TOTAL PER BUDGET" 
           class="q-my-md"
         />
-        <q-item v-if="store.state.purchasingBudget" class="q-mt-md" clickable v-ripple @click="data.cardPurchaserCategories = true">
+        <q-item 
+          v-if="store.state.purchasingBudget" 
+          class="q-mt-md" 
+          clickable 
+          v-ripple 
+          @click="store.state.purchaserAmount > 0 ? data.cardPurchaserCategories = true : data.cardPurchaserCategories = false">
           <div class="col-6 text-left">
             <span class="q-pl-lg text-bold">{{ store.state.purchasingBudget['name'] }}</span>
           </div>
           <div class="col-6 text-right">
-            <q-badge v-if="store.state.purchaserAmount" class="q-mr-sm" align="middle" color="deep-purple-5">${{ store.state.purchaserAmount /100 }}</q-badge>
+            <q-badge class="q-mr-sm" align="middle" color="deep-purple-5">
+              ${{ store.state.purchaserAmount > 0 ? store.state.purchaserAmount /100 : 0 }}
+            </q-badge>
           </div>
         </q-item>
 
@@ -181,12 +188,19 @@
           label="CATEGORY AMOUNTS MUST ADD UP TO TOTAL PER BUDGET"
           class="q-my-md" 
         />
-        <q-item v-if="store.state.splittingBudget" class="q-mb-md" clickable v-ripple @click="data.cardSplitterCategories = true">
+        <q-item 
+          v-if="store.state.splittingBudget" 
+          class="q-mb-md" 
+          clickable 
+          v-ripple 
+          @click="store.state.splitterAmount > 0 ? data.cardSplitterCategories = true : data.cardSplitterCategories = false">
           <div class="col-6 text-left">
             <span class="q-pl-lg text-bold">{{ store.state.splittingBudget['name'] }}</span>
           </div>
           <div class="col-6 text-right">
-            <q-badge class="q-mr-sm" align="middle" color="deep-purple-5">${{ store.state.splitterAmount / 100 }}</q-badge>
+            <q-badge class="q-mr-sm" align="middle" color="deep-purple-5">
+              ${{ store.state.splitterAmount > 0 ? store.state.splitterAmount / 100 : store.state.splitterAmount }}
+            </q-badge>
           </div>
         </q-item>
 
@@ -374,7 +388,7 @@ export default {
     }
 
     const purchaserCategoryOptions = computed(() => {
-      if (store.state.allPurchaserCategories.length > 0) {
+      if (store.state.allPurchaserCategories.length >= 0) {
         const result = []
         const map = new Map()
         const searchRegex = new RegExp(/.* [|] YNABFS/, 'i')
@@ -397,7 +411,7 @@ export default {
     })
 
     const splitterCategoryOptions = computed(() => {
-      if (store.state.allSplitterCategories.length > 0) {
+      if (store.state.allSplitterCategories.length >= 0) {
         const result = []
         const map = new Map()
         const searchRegex = new RegExp(/.* [|] YNABFS/, 'i')
@@ -423,14 +437,14 @@ export default {
       if (purchaserCategoryOptions.value && splitterCategoryOptions.value) {
         if (store.state.purchasingBudget) {
           const search = store.state.purchasingBudget.name + ' | YNABFS'
-          const splitYNABFS = splitterCategoryOptions.value.find(o => o.name === search)
+          const splitYNABFS = store.state.allSplitterCategories.find(o => o.name === search)
             if (splitYNABFS) {
                 store.state.purchasersCategoryInSplittersBudget = splitYNABFS
             } 
         }  
         if (store.state.splittingBudget) {
           const search = store.state.splittingBudget.name + ' | YNABFS'
-          const purchaseYNABFS = purchaserCategoryOptions.value.find(o => o.name === search)
+          const purchaseYNABFS = store.state.allPurchaserCategories.find(o => o.name === search)
             if (purchaseYNABFS) {
                 store.state.splittersCategoryInPurchasersBudget = purchaseYNABFS
             } 
@@ -440,11 +454,11 @@ export default {
 
     const allowNextStep = computed(() => {
       if (
-          store.state.purchaserCategorySplits.length > 0 &&
-          store.state.splitterCategorySplits.length > 0 &&
+          (store.state.purchaserAmount === 0 || store.state.purchaserCategorySplits.length > 0) &&
+          (store.state.splitterAmount === 0 || store.state.splitterCategorySplits.length > 0) &&
           store.state.transactionAmount > 0 &&
-          data.purchaserAmountRemaining == 0 && 
-          data.splitterAmountRemaining == 0
+          data.purchaserAmountRemaining === 0 && 
+          data.splitterAmountRemaining === 0
           ) {
         return true
       } else {
@@ -457,14 +471,18 @@ export default {
         data.purchaserAmountRemaining = 0
       } else if (store.state.purchaserCategorySplits.length > 1) {
         data.purchaserAmountRemaining = Number(((store.state.purchaserAmount * 100) - (store.purchaserCategoryTotal.value * 100)) / 100)
+      } else if (store.state.purchaserAmount === 0) {
+        data.purchaserAmountRemaining = 0
       } else {
         data.purchaserAmountRemaining = null
       }
 
       if (store.state.splitterCategorySplits.length === 1) {
         data.splitterAmountRemaining = 0
-      } else if (store.state.splitterCategorySplits.length > 0) {
+      } else if (store.state.splitterCategorySplits.length > 1) {
         data.splitterAmountRemaining = Number(((store.state.splitterAmount * 100) - (store.splitterCategoryTotal.value * 100)) / 100)
+      } else if (store.state.purchaserAmount === 0) {
+        data.splitterAmountRemaining = 0
       } else {
         data.splitterAmountRemaining = null
       }

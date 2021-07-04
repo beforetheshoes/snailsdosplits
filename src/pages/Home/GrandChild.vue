@@ -185,6 +185,12 @@ export default {
                     category_id: splitterCategory.id
                 })
             }
+        } else if (store.state.purchaserCategorySplits.length === 0 && store.state.purchaserAmount === 0) {
+            let splitterCategoryToFind = store.state.splittingBudget['name'] + " | YNABFS"
+            let splitterCategory = store.state.allPurchaserCategories.find(o => o.name === splitterCategoryToFind)
+            if (splitterCategory) {
+                data.purchaserCategoryId = splitterCategory.id
+            }
         } else {
             return false
         }
@@ -316,8 +322,10 @@ export default {
                 memo.value &&
                 cleared.value &&
                 date.value &&
-                data.purchaserCategoryId === null && 
-                data.purchaserSubtransactions.length > 1 &&
+                (
+                    (data.purchaserCategoryId === null && data.purchaserSubtransactions.length > 1) || 
+                    (store.state.purchaserAmount === 0 && store.state.splitterAmount === store.state.transactionAmount && data.purchaserSubtransactions.length === 0)
+                ) &&
                 store.state.purchasersAccountInSplittersBudget.id &&
                 (
                     (splitterCategoryId.value === null && data.splitterSubtransactions.length > 1) || 
