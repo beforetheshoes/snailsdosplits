@@ -16,67 +16,19 @@
       >
         Click to split ${{ store.state.transactionAmount / 100 }}
       </q-btn>
+      <card-transaction-split v-model="data.cardTransactionSplit"
+      ></card-transaction-split>
 
-      <q-dialog v-model="data.cardTransactionSplit" @hide="validateAndSave">
-        <q-card class="my-card">
-          <q-card-section>
-            <div class="row no-wrap items-center">
-              <div class="col text-h6 ellipsis">
-                Total ${{ store.state.transactionAmount / 100 }}
-              </div>
-            </div>
-          </q-card-section>
-
-          <q-card-section class="q-pt-none">
-            <div class="text-subtitle2">
-              How would you like to split this transaction?
-            </div>
-            <div class="text-caption text-bold">
-              <div class="q-gutter-sm">
-                <div class="row">
-                  <div class="col-4"><q-radio v-model="data.splitRatio" val="25/75" label="25/75" /></div>
-                  <div class="col-4"><q-radio v-model="data.splitRatio" val="50/50" label="50/50" /></div>
-                  <div class="col-4"><q-radio v-model="data.splitRatio" val="75/25" label="75/25" /></div>
-                </div>
-                <div class="row">
-                  <div class="col-4"><q-radio v-model="data.splitRatio" val="Other" label="Other" /></div>
-                  <div class="col-8">
-                    <currency-input v-if="data.splitRatio==='Other'"
-                      v-model="data.otherPurchaseRatio"
-                      :options="{ currency: 'USD', autoDecimalDigits: true, exportValueAsInteger: true }"
-                    />
-                  </div>
-                </div>
-              </div>
-              <q-separator />
-              <q-item>
-                <q-item-section>{{ store.state.purchasingBudget['name'] }}</q-item-section>
-                <q-item-section side>
-                  <q-item-label caption>${{ purchaserRatio / 100 }}</q-item-label>
-                </q-item-section>
-              </q-item>
-              <q-item>
-                <q-item-section>{{ store.state.splittingBudget['name'] }}</q-item-section>
-                <q-item-section side>
-                  <q-item-label caption>${{ splitterRatio / 100 }}</q-item-label>
-                </q-item-section>
-              </q-item>
-            </div>
-          </q-card-section>
-          <q-separator />
-          <q-card-actions align="right">
-            <q-btn v-close-popup flat color="primary" label="Save" @click="validateAndSave" />
-          </q-card-actions>
-        </q-card>
-      </q-dialog>
       <div class="container" v-if="store.state.purchaserAmount >= 0 && store.state.splitterAmount >= 0">
+        <pre>{{ data.purchaserAmountRemaining }}</pre>
+        <pre>{{ store.state.purchaserAmount }}</pre>
         <q-chip 
           v-if="data.purchaserAmountRemaining < 0 || data.purchaserAmountRemaining > store.state.purchaserAmount"
           square 
           color="red" 
           text-color="white" 
           icon="error_outline" 
-          label="CATEGORY AMOUNTS MUST ADD UP TO TOTAL PER BUDGET" 
+          label="Split must add up to purchaser's share." 
           class="q-my-md"
         />
         <q-item 
@@ -179,13 +131,15 @@
         </div>
 
         <q-separator class="q-my-sm"></q-separator>
+        <pre>{{ data.splitterAmountRemaining }}</pre>
+        <pre>{{ store.state.splitterAmount }}</pre>
         <q-chip 
           v-if="data.splitterAmountRemaining < 0 || data.splitterAmountRemaining > store.state.splitterAmount"
           square 
           color="red" 
           text-color="white" 
           icon="error_outline" 
-          label="CATEGORY AMOUNTS MUST ADD UP TO TOTAL PER BUDGET"
+          label="Split must add up to splitter's share."
           class="q-my-md" 
         />
         <q-item 
@@ -237,7 +191,7 @@
             </q-card-section>
             <q-separator />
             <q-card-actions align="right">
-              <q-btn v-close-popup flat color="primary" label="Save" @click="validateAndSave" />
+              <q-btn v-close-popup flat color="primary" label="Save" />
             </q-card-actions>
           </q-card>
         </q-dialog>
@@ -308,16 +262,15 @@
 import { reactive, onMounted, inject, computed, onBeforeUnmount } from 'vue'
 import { useRouter } from 'vue-router'
 import CurrencyInput from '../../components/CurrencyInput.vue'
+import CardTransactionSplit from 'src/components/CardTransactionSplit.vue'
 
 export default {
   name: 'Child',
-  components: { CurrencyInput },
+  components: { CurrencyInput, CardTransactionSplit },
   setup() {   
     const data = reactive({
       cardTransactionSplit: false,
       cardBudgetChooser: false,
-      splitRatio: '50/50',
-      otherPurchaseRatio: 0,
       cardPurchaserCategories: false,
       cardSplitterCategories: false,
       splitterAmountRemaining: null,
@@ -355,37 +308,7 @@ export default {
       checkCategoriesinEachBudget()
     })
 
-    const purchaserRatio = computed(() => { 
-      switch (data.splitRatio) {
-        case '25/75':
-          return (Math.round((store.state.transactionAmount * .25) + Number.EPSILON) * 10) / 10
-        case '50/50':
-          return (Math.round((store.state.transactionAmount * .5) + Number.EPSILON) * 10) / 10
-        case '75/25':
-          return (Math.round((store.state.transactionAmount * .75) + Number.EPSILON) * 10) / 10
-        case 'Other':
-          return data.otherPurchaseRatio
-        default:
-          return (Math.round((store.state.transactionAmount * .5) + Number.EPSILON) * 10) / 10
-      }
-    })
 
-    const splitterRatio = computed(() => { 
-      return (((store.state.transactionAmount * 100) - (purchaserRatio.value * 100)) / 100)
-    })
-
-    function validateAndSave() {
-      if (purchaserRatio.value <= store.state.transactionAmount && purchaserRatio.value >= 0 && purchaserRatio.value !== null) {
-        store.state.purchaserAmount = Number(purchaserRatio.value)
-        store.state.splitterAmount = Number(splitterRatio.value)
-        if (store.state.purchaserCategorySplits.length === 1) {
-          store.state.purchaserCategorySplits[0].amount = Number(store.state.purchaserAmount)
-        }
-        calculateAmountRemaining()
-      } else {
-        alert("You have entered unacceptable values and you know it.")
-      }
-    }
 
     const purchaserCategoryOptions = computed(() => {
       if (store.state.allPurchaserCategories.length >= 0) {
@@ -488,15 +411,20 @@ export default {
       }
     }
 
+    function validateAndSave () {
+        if (store.state.purchaserCategorySplits.length === 1) {
+          store.state.purchaserCategorySplits[0].amount = Number(store.state.purchaserAmount)
+        }
+        calculateAmountRemaining()
+    }
+
     return {
       data,
       store,
-      purchaserRatio,
-      splitterRatio,
-      validateAndSave,
       purchaserCategoryOptions,
       splitterCategoryOptions,
       allowNextStep,
+      validateAndSave,
       calculateAmountRemaining,
       checkCategoriesinEachBudget
     }
