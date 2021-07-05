@@ -78,7 +78,7 @@
         </div>
         <div>
             <q-btn
-            v-if="store.state.ynab.token && store.state.purchaserAmount"
+            v-if="store.state.ynab.token && store.state.purchaserAmount >= 0"
             class="q-mt-md q-mb-xl"
             color="primary"
             to="/home/child"
@@ -233,7 +233,7 @@ export default {
         }
     })
 
-    function createPurchaserTransaction() {
+    function createPurchaserNewTransaction() {
         const transaction = purchaserTransaction.value
         store.state.api.transactions.createTransaction(store.state.purchasingBudget.id, { transaction }).then((res) => {
            data.purchaserTransactionResponse = "Successful"
@@ -246,6 +246,19 @@ export default {
         })
     }
     
+    function createPurchaserUpdateTransaction() {
+        const transaction = purchaserTransaction.value
+        store.state.api.transactions.updateTransaction(store.state.purchasingBudget.id, store.state.unapprovedUpdateTransactionId, { transaction }).then((res) => {
+           data.purchaserTransactionResponse = "Successful"
+        }).catch((err) => {
+           store.state.error = err.error.detail
+           data.purchaserTransactionResponse = "Failed"
+           data.purchaserTransactionErrorDetail = err.error.detail
+        }).finally(() => {
+           store.state.loading = false
+        })
+    }
+
     const purchaserBalanceTransaction = computed(() => {
         if (
             store.state.transactionAccount.id &&
@@ -343,7 +356,11 @@ export default {
 
     function submitAllTransactions() {
         if (data.finalValidationPassed) {
-            createPurchaserTransaction()
+            if (store.state.unapprovedUpdateTransactionId) {
+                createPurchaserUpdateTransaction()
+            } else {
+                createPurchaserNewTransaction()
+            }
             createPurchaserBalanceTransaction()
             createSplitterTransaction()
         } else {
@@ -363,7 +380,8 @@ export default {
       purchaserTransaction,
       purchaserBalanceTransaction,
       splitterTransaction,
-      createPurchaserTransaction,
+      createPurchaserNewTransaction,
+      createPurchaserUpdateTransaction,
       createPurchaserBalanceTransaction,
       createSplitterTransaction,
       finalValidation,

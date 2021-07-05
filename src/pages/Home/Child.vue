@@ -20,8 +20,6 @@
       ></card-transaction-split>
 
       <div class="container" v-if="store.state.purchaserAmount >= 0 && store.state.splitterAmount >= 0">
-        <pre>{{ data.purchaserAmountRemaining }}</pre>
-        <pre>{{ store.state.purchaserAmount }}</pre>
         <q-chip 
           v-if="data.purchaserAmountRemaining < 0 || data.purchaserAmountRemaining > store.state.purchaserAmount"
           square 
@@ -42,7 +40,7 @@
           </div>
           <div class="col-6 text-right">
             <q-badge class="q-mr-sm" align="middle" color="deep-purple-5">
-              ${{ store.state.purchaserAmount > 0 ? store.state.purchaserAmount /100 : 0 }}
+              ${{ store.state.purchaserAmount > 0 ? (store.state.purchaserAmount / 100).toFixed(2) : 0 }}
             </q-badge>
           </div>
         </q-item>
@@ -52,7 +50,7 @@
             <q-card-section>
               <div class="row no-wrap items-center">
                 <div class="col text-h6 ellipsis">
-                  Total ${{ store.state.purchaserAmount / 100 }}
+                  Total ${{ (store.state.purchaserAmount / 100).toFixed(2) }}
                 </div>
               </div>
             </q-card-section>
@@ -114,7 +112,7 @@
                   readonly
                   filled
                   color="black"
-                  :label="'$' + store.state.purchaserAmount / 100 "
+                  :label="'$' + (store.state.purchaserAmount / 100).toFixed(2) "
                 ></q-input>
             </div>
           </q-item>
@@ -131,8 +129,6 @@
         </div>
 
         <q-separator class="q-my-sm"></q-separator>
-        <pre>{{ data.splitterAmountRemaining }}</pre>
-        <pre>{{ store.state.splitterAmount }}</pre>
         <q-chip 
           v-if="data.splitterAmountRemaining < 0 || data.splitterAmountRemaining > store.state.splitterAmount"
           square 
@@ -153,7 +149,7 @@
           </div>
           <div class="col-6 text-right">
             <q-badge class="q-mr-sm" align="middle" color="deep-purple-5">
-              ${{ store.state.splitterAmount > 0 ? store.state.splitterAmount / 100 : store.state.splitterAmount }}
+              ${{ store.state.splitterAmount > 0 ? (store.state.splitterAmount / 100).toFixed(2) : 0 }}
             </q-badge>
           </div>
         </q-item>
@@ -163,7 +159,7 @@
             <q-card-section>
               <div class="row no-wrap items-center">
                 <div class="col text-h6 ellipsis">
-                  Total ${{ store.state.splitterAmount / 100 }}
+                  Total ${{ (store.state.splitterAmount / 100).toFixed(2) }}
                 </div>
               </div>
             </q-card-section>
@@ -226,7 +222,7 @@
                   readonly
                   filled
                   color="black"
-                  :label="'$' + store.state.splitterAmount / 100 "
+                  :label="'$' + (store.state.splitterAmount / 100).toFixed(2) "
                 ></q-input>
             </div>
           </q-item>
@@ -294,8 +290,8 @@ export default {
       }
 
       if (store.state.transactionAmount) {
-        store.state.purchaserAmount = (Math.round(((store.state.transactionAmount * .5) + Number.EPSILON) * 100) / 100).toFixed(2)
-        store.state.splitterAmount = (((store.state.transactionAmount * 100) - (store.state.purchaserAmount * 100)) / 100).toFixed(2)
+        store.state.purchaserAmount = (Math.round((store.state.transactionAmount * .5) + Number.EPSILON) * 100) / 100
+        store.state.splitterAmount = (((store.state.transactionAmount * 100) - (store.state.purchaserAmount * 100)) / 100)
         data.purchaserAmountRemaining = Number(store.state.purchaserAmount)
         data.splitterAmountRemaining = Number(store.state.splitterAmount)
         calculateAmountRemaining()

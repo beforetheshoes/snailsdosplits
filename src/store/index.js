@@ -14,6 +14,8 @@ const state = reactive({
     payees: [],
     accounts: [],
     splittersAccounts: [],
+    unapprovedPurchaserTransactions: [],
+    unapprovedUpdateTransactionId: null,
     transactions: [],
     loading: false,
     error: null,
@@ -80,16 +82,32 @@ const methods = {
             state.loading = false
         })
     },
+
+    getUnapprovedPurchaserTransactions() {
+        state.api.transactions.getTransactions(state.purchasingBudget.id, undefined, "unapproved").then((res) => {
+            state.unapprovedPurchaserTransactions = res.data.transactions
+            console.log(res.data)
+        }).catch((err) => {
+            state.error = err.error.detail
+        }).finally(() => {
+            state.loading = false
+        })
+    },
     
     getPayeesAndAccounts() {
         state.loading = true
         state.error = null
         state.transactionPayee = null
-        state.transactionAccount = null     
+        state.transactionAccount = null 
+        state.transactionNotes = null
+        state.transactionCleared = false
+        state.transactionAmount = null
+        state.unapprovedUpdateTransactionId = null 
         if (state.purchasingBudget) {
             this.getPayees()
             this.getAccounts()
             this.getSplittersAccounts()
+            this.getUnapprovedPurchaserTransactions()
         } else {
             console.log("You need to select a budget before you see the payees.")
         }

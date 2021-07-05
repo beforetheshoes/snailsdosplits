@@ -51,13 +51,13 @@
                 <q-item>
                     <q-item-section>{{ store.state.purchasingBudget['name'] }}</q-item-section>
                     <q-item-section side>
-                        <q-item-label caption>${{ purchaserRatio / 100 }}</q-item-label>
+                        <q-item-label caption>${{ (purchaserRatio / 100).toFixed(2) }}</q-item-label>
                     </q-item-section>
                 </q-item>
                 <q-item>
                     <q-item-section>{{ store.state.splittingBudget['name'] }}</q-item-section>
                     <q-item-section side>
-                        <q-item-label caption>${{ splitterRatio / 100 }}</q-item-label>
+                        <q-item-label caption>${{ (splitterRatio / 100).toFixed(2) }}</q-item-label>
                     </q-item-section>
                 </q-item>
 

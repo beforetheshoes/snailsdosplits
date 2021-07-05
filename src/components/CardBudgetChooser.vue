@@ -33,8 +33,7 @@
               v-close-popup 
               flat 
               color="primary" 
-              label="Save" 
-              @click="store.methods.getPayeesAndAccounts()"
+              label="Save"
               />
           </q-card-actions>
         </q-card>

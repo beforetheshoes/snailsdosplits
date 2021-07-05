@@ -1,6 +1,27 @@
 <template>
+  <div class="q-pa-md q-gutter-sm" v-if="store.state.purchasingBudget && store.state.unapprovedPurchaserTransactions.length > 0 && !store.state.unapprovedUpdateTransactionId">
+    <q-banner dense rounded class="bg-accent text-h5 text-white col-auto">
+      {{ store.state.purchasingBudget.name }}'s budget has unapproved transactions. Would you like to split one?
+      <template v-slot:action>
+        <q-btn flat color="white" label="Dismiss" @click="store.state.unapprovedPurchaserTransactions.length = 0" />
+        <q-btn flat color="white" label="Select transaction" @click="data.cardUnapprovedTransaction = true"/>
+      </template>
+    </q-banner>
+
+    <card-unapproved-transaction v-model="data.cardUnapprovedTransaction"></card-unapproved-transaction>
+  </div>
   <div>
-    <p class="text-center text-bold">Transaction Setup</p>
+      <div class="q-pa-md q-gutter-md text-center">
+        <q-badge 
+          v-if="store.state.unapprovedUpdateTransactionId" 
+          outline 
+          multi-line
+          color="primary" 
+          label="You are updating an existing transaction"
+          class="q-px-auto q-my-md text-center text-subtitle1 text-weight-bold"
+        />
+        <p v-else class="text-center text-bold">New Transaction Setup</p>
+      </div>
     <div class="col">
 
     <q-btn 
@@ -24,7 +45,8 @@
         option-label="name"
         style="width: 100%"
         @filter="filterFnAccounts"
-        :disabled="disabledIfNoBudgetSelected"
+        :disabled="disabledIfConditions"
+        :readonly="disabledIfConditions"
       />
       <q-select
         class="q-my-md float-md-end"
@@ -39,7 +61,8 @@
         style="width: 100%"
         use-input
         @filter="filterFnOptions"
-        :disabled="disabledIfNoBudgetSelected"
+        :disabled="disabledIfConditions"
+        :readonly="disabledIfConditions"
       />
       <q-input 
         class="q-my-md float-md-end" 
@@ -68,15 +91,31 @@
         </template>
       </q-input>
       <currency-input
+        v-if="!store.state.unapprovedUpdateTransactionId"
         v-model="store.state.transactionAmount"
         :options="{ currency: 'USD', autoDecimalDigits: true, valueRange: {min:0,max:undefined}, autoSign:true, exportValueAsInteger: true}"
         class="q-my-md"
       />
+      <q-input
+        v-else
+        :model-value="'$' + store.state.transactionAmount / 100"
+        disabled
+        readonly
+        filled
+        class="text-weight-thin"
+      ></q-input>
       <div class="q-gutter-sm text-center">
         <q-checkbox 
           left-label 
           v-model="store.state.transactionCleared" 
-          label="Check this box if the transaction has already cleared" />
+          label="Check this box if the transaction has already cleared" 
+          :disable="disabledIfConditions"
+        />
+      </div>
+      <div v-if="store.state.unapprovedUpdateTransactionId" class="text-center text-weight-bold">
+        <q-separator class="q-my-md" />
+          When updating a transaction, only the memo and date fields can be modified.
+        <q-separator class="q-my-md" />
       </div>
     </div>
   </div>
@@ -86,24 +125,22 @@
 import { reactive, inject, computed, onMounted } from 'vue'
 import CurrencyInput from './CurrencyInput.vue'
 import CardBudgetChooser from './CardBudgetChooser.vue'
+import CardUnapprovedTransaction from './CardUnapprovedTransaction.vue'
 
 export default {
-  components: { CurrencyInput, CardBudgetChooser },
+  inheritAttrs: false,
+  components: { 
+    CurrencyInput, 
+    CardBudgetChooser,
+    CardUnapprovedTransaction
+  },
   setup() {
     
     let data = reactive({
-      moneyFormatForDirective: {
-      decimal: '.',
-      thousands: ',',
-      prefix: '$ ',
-      suffix: ' #',
-      precision: 2,
-      masked: false /* doesn't work with directive */
-      },
-      price: '',
       payeeOptions: [''],
       accountOptions: [''],
-      cardBudgetChooser: false
+      cardBudgetChooser: false,
+      cardUnapprovedTransaction: false
     })
   
     const store = inject('store')
@@ -127,7 +164,6 @@ export default {
           let obj = store.state.payees.filter(v => (!searchRegex.test(v.name)))
           data.payeeOtions = obj
         })
-        //return
       }
       update(() => {  
         const needle = val.toLowerCase()
@@ -162,13 +198,17 @@ export default {
       })
     }
 
-    function disabledIfNoBudgetSelected() {
-      if (store.state.purchasingBudget.length < 1) {
-        return true
+    const disabledIfConditions = computed(() => {
+      if (store.state.purchasingBudget) {
+        if (store.state.purchasingBudget.length < 1 || store.state.unapprovedUpdateTransactionId) {
+          return true
+        } else {
+          return false
+        }
       } else {
         return false
       }
-    }
+    })
 
     const cardBudgetChooserLabel = computed(() => {
       if (store.state.purchasingBudget && store.state.splittingBudget) {
@@ -189,7 +229,7 @@ export default {
       store,
       filterFnOptions,
       filterFnAccounts,
-      disabledIfNoBudgetSelected,
+      disabledIfConditions,
       cardBudgetChooserLabel,
       dateOptionsFn
     }
