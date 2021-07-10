@@ -8,6 +8,7 @@ const state = reactive({
         token: null,
         api: null,
     },
+    context: NODE_ENV,
     budgets: [],
     payees: [],
     accounts: [],
