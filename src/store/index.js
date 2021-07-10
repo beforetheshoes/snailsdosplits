@@ -3,8 +3,8 @@ import { reactive, computed } from 'vue'
 
 const state = reactive({
     ynab: {
-        clientId: process.env.CLIENT_ID,
-        redirectUri: process.env.REDIRECT_URI,
+        clientId: process.env.VUE_APP_CLIENT_ID,
+        redirectUri: process.env.VUE_APP_REDIRECT_URI,
         token: null,
         api: null,
     },
