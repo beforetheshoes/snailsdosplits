@@ -35,5 +35,4 @@ ynabconfig.json
 *.njsproj
 *.sln
 
-.env.prod
-.env.dev
+.env*
