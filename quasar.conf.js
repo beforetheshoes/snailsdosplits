@@ -138,9 +138,9 @@ module.exports = configure(function (ctx) {
       },
 
       manifest: {
-        name: `ynabquasar`,
-        short_name: `ynabquasar`,
-        description: `A Quasar Framework app`,
+        name: `ynabforsnails`,
+        short_name: `ynabforsnails`,
+        description: `YNAB For Snails`,
         display: 'standalone',
         orientation: 'portrait',
         background_color: '#ffffff',
@@ -205,7 +205,7 @@ module.exports = configure(function (ctx) {
       builder: {
         // https://www.electron.build/configuration/configuration
 
-        appId: 'ynabquasar'
+        appId: 'ynabforsnails'
       },
 
       // "chain" is a webpack-chain object https://github.com/neutrinojs/webpack-chain
