@@ -37,10 +37,10 @@
           </form>
 
           <FirstPane v-else :budgets="store.state.budgets"></FirstPane>        
-            <div v-if="store.state.ynab.token" class="row">
-              <div class="column items-center q-pa-xl" style="width: 100%">
-                <div class="row">
-                  <div class="col">
+          <div v-if="store.state.ynab.token" class="row">
+            <div class="column items-center q-pa-xl" style="width: 100%">
+              <div class="row">
+                <div class="col">
                   <q-btn
                     padding="xs lg"
                     color="primary"
@@ -48,9 +48,20 @@
                     to="/home/child"
                     label="Next Step"
                   />
-                  </div>
                 </div>
               </div>
+              <div class="row">
+                <div class="col">
+                  <q-btn
+                    class="q-mt-xl q-mb-xl"
+                    color="primary"
+                    to="/home"
+                    label="Start Over"
+                    @click="store.methods.startOver()"
+                  />
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>

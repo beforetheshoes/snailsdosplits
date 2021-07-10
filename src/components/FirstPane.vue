@@ -46,7 +46,6 @@
         style="width: 100%"
         @filter="filterFnAccounts"
         :disabled="disabledIfConditions"
-        :readonly="disabledIfConditions"
       />
       <q-select
         class="q-my-md float-md-end"
@@ -62,7 +61,6 @@
         use-input
         @filter="filterFnOptions"
         :disabled="disabledIfConditions"
-        :readonly="disabledIfConditions"
       />
       <q-input 
         class="q-my-md float-md-end" 
@@ -100,7 +98,6 @@
         v-else
         :model-value="'$' + store.state.transactionAmount / 100"
         disabled
-        readonly
         filled
         class="text-weight-thin"
       ></q-input>

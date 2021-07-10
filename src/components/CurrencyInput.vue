@@ -12,6 +12,7 @@
 </template>
 
 <script>
+import { watch } from 'vue'
 import useCurrencyInput from "vue-currency-input"
 import { useField } from "vee-validate"
 
@@ -22,8 +23,21 @@ export default {
     options: Object,
   },
   setup(props) {
-    const { inputRef } = useCurrencyInput(props.options);
+    const { 
+      inputRef,
+      setOptions,
+      setValue
+    } = useCurrencyInput(props.options);
+
     const { errorMessage, value } = useField("amount", (value) => !!value);
+
+    watch(() => props.modelValue, (value) => {
+      setValue(value)
+    })
+
+    watch(() => props.options, (options) => {
+      setOptions(options)
+    })
 
     return { inputRef, errorMessage, value };
   },

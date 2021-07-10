@@ -42,7 +42,12 @@
                 {{ data.splitterTransactionErrorDetail }}
             </p>
         </div>
-        <div v-if="store.state.ynab.token && store.state.purchasingBudget">
+        <div v-if="store.state.ynab.token && 
+                   store.state.purchasingBudget &&
+                   data.purchaserTransactionResponse === null && 
+                   data.purchaserBalanceTransactionResponse === null && 
+                   data.splitterTransactionResponse === null"
+        >
             <h5>Please verify transactions before posting</h5>
             <q-btn
                 v-if="data.finalValidationPassed"
@@ -78,11 +83,23 @@
         </div>
         <div>
             <q-btn
-            v-if="store.state.ynab.token && store.state.purchaserAmount >= 0"
+            v-if="store.state.ynab.token && 
+                  store.state.purchaserAmount >= 0 &&
+                  data.purchaserTransactionResponse === null && 
+                  data.purchaserBalanceTransactionResponse === null && 
+                  data.splitterTransactionResponse === null"
             class="q-mt-md q-mb-xl"
             color="primary"
             to="/home/child"
             label="Back"
+            />
+            <q-btn
+            v-else
+            class="q-mt-md q-mb-xl"
+            color="primary"
+            to="/home"
+            label="Add another transaction"
+            @click="store.methods.startOver()"
             />
         </div>
     </page-body>

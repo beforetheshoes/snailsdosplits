@@ -1,7 +1,5 @@
-//import ynabconfig from '../../ynabconfig.json'
-
 import { reactive, computed } from 'vue'
-import { store } from 'quasar/wrappers'
+//import { store } from 'quasar/wrappers'
 
 const state = reactive({
     ynab: {
@@ -40,6 +38,34 @@ const state = reactive({
 })
 
 const methods = {
+    startOver() {
+        state.payees = []
+        state.accounts = []
+        state.splittersAccounts = []
+        state.unapprovedPurchaserTransactions = []
+        state.unapprovedUpdateTransactionId = null
+        state.transactions = []
+        state.error = null
+        state.purchasingBudget = null
+        state.splittingBudget = null
+        state.transactionDate = todaysDate
+        state.transactionAmount = null
+        state.purchaserAmount = null
+        state.splitterAmount = null
+        state.transactionPayee = null
+        state.transactionAccount = null
+        state.transactionNotes = null
+        state.transactionCleared = false
+        state.allPurchaserCategories = []
+        state.allSplitterCategories = []
+        state.purchaserCategorySplits = []
+        state.splitterCategorySplits = []
+        state.splittersAccountInPurchasersBudget = null
+        state.purchasersAccountInSplittersBudget = null
+        state.splittersCategoryInPurchasersBudget = null
+        state.purchasersCategoryInSplittersBudget = null
+    },
+
     getBudgets() {
         state.loading = true
         state.error = null
@@ -55,7 +81,14 @@ const methods = {
     
     getPayees() {
         state.api.payees.getPayees(state.purchasingBudget.id).then((res) => {
-            state.payees = res.data.payees 
+            state.payees = res.data.payees.filter((payee) => {
+                return (
+                    payee.name !== 'Starting Balance' &&
+                    payee.name !== 'Manual Balance Adjustment' &&
+                    payee.name !== 'Reconciliation Balance Adjustment'
+                )
+            })
+            console.log(res.data.payees) 
         }).catch((err) => {
             state.error = err.error.detail
         }).finally(() => {
@@ -85,8 +118,8 @@ const methods = {
 
     getUnapprovedPurchaserTransactions() {
         state.api.transactions.getTransactions(state.purchasingBudget.id, undefined, "unapproved").then((res) => {
-            state.unapprovedPurchaserTransactions = res.data.transactions
-            console.log(res.data)
+            const searchRegex = new RegExp(/.*\[YNAB For Snails\]/, 'i')
+            state.unapprovedPurchaserTransactions = res.data.transactions.filter(transaction => (!searchRegex.test(transaction.memo)))
         }).catch((err) => {
             state.error = err.error.detail
         }).finally(() => {

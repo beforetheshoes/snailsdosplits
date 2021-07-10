@@ -79,6 +79,4 @@
   </page>
 </template>
 
-<script>
 
-</script>
