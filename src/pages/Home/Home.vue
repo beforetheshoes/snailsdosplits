@@ -8,7 +8,6 @@
     </page-header>
 
     <page-body>
-      <div>{{ store.state.context }}</div>
       <div class="q-pa-lg">
         <!-- Display a loading message if loading -->
         <h1 v-if="store.state.loading" class="display-4">Loading...</h1>

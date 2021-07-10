@@ -1,6 +1,7 @@
 import { reactive, computed } from 'vue'
 //import { store } from 'quasar/wrappers'
 
+
 const state = reactive({
     ynab: {
         clientId: process.env.VUE_APP_CLIENT_ID,
@@ -8,7 +9,6 @@ const state = reactive({
         token: null,
         api: null,
     },
-    context: process.env.NODE_ENV,
     budgets: [],
     payees: [],
     accounts: [],
