@@ -73,8 +73,26 @@
                 option-value="id"
                 option-label="name"
                 style="width: 100%"
-                use-input
-              />
+              >
+                <template v-slot:option="scope">
+                  <q-item v-bind="scope.itemProps">
+                    <q-item-section class="col-9">
+                      <q-item-label>{{ scope.opt.name }}</q-item-label>
+                    </q-item-section>
+                    <q-item-section class="col-3">
+                      <q-chip 
+                        caption
+                        dense
+                        color="secondary"
+                        class="absolute-right q-my-auto q-mr-sm"
+                      >${{ (scope.opt.balance / 1000).toFixed(2) }}</q-chip>
+                    </q-item-section>
+                  </q-item>
+                  <q-separator />
+                </template>
+              </q-select>
+
+
             </q-card-section>
             <q-separator />
             <q-card-actions align="right">
@@ -182,8 +200,24 @@
                 option-value="id"
                 option-label="name"
                 style="width: 100%"
-                use-input
-              />
+              >
+                <template v-slot:option="scope">
+                  <q-item v-bind="scope.itemProps">
+                    <q-item-section class="col-9">
+                      <q-item-label>{{ scope.opt.name }}</q-item-label>
+                    </q-item-section>
+                    <q-item-section class="col-3">
+                      <q-chip 
+                        caption
+                        dense
+                        color="secondary"
+                        class="absolute-right q-my-auto q-mr-sm"
+                      >${{ (scope.opt.balance / 1000).toFixed(2) }}</q-chip>
+                    </q-item-section>
+                  </q-item>
+                  <q-separator />
+                </template>
+              </q-select>
             </q-card-section>
             <q-separator />
             <q-card-actions align="right">
@@ -240,11 +274,6 @@
       </div>
       <q-separator></q-separator>
       <p class="q-mt-lg q-pa-md text-bold">Click on a budget above to choose categories</p>
-      <pre>{{ store.state.transactionAmount > 0 }}</pre>
-      <pre>{{ data.purchaserAmountRemaining === 0 }}</pre>
-      <pre>{{ data.splitterAmountRemaining === 0 }}</pre>
-      <pre>{{ store.state.purchaserCategorySplits.length }}</pre>
-      <pre>{{ store.state.splitterCategorySplits.length }}</pre>
       <div v-if="allowNextStep" class="q-mb-xl">
         <q-btn
           padding="xs lg"
@@ -326,6 +355,7 @@ export default {
               result.push({
                 id: item.id,
                 name: item.name,
+                balance: item.balance,
                 amount: null
               })
             }
@@ -349,6 +379,7 @@ export default {
               result.push({
                 id: item.id,
                 name: item.name,
+                balance: item.balance,
                 amount: null
               })
             }
@@ -391,9 +422,9 @@ export default {
             checkCategoriesinEachBudget()
             router.push('/home/child/grandchild')
           }).onCancel(() => {
-           console.log('>>>> Cancel')
+           //console.log('>>>> Cancel')
           }).onDismiss(() => {
-           console.log('I am triggered on both OK and Cancel')
+           //console.log('I am triggered on both OK and Cancel')
           })
       } else {
           checkCategoriesinEachBudget()

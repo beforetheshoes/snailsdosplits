@@ -63,7 +63,6 @@
         @filter="filterFnOptions"
         :disabled="disabledIfConditions"
       />
-      <pre>{{ store.state?.transactionPayee }}</pre>
       <q-input 
         class="q-my-md float-md-end" 
         filled 
