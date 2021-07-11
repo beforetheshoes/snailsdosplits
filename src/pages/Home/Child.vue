@@ -67,12 +67,15 @@
                 stack-label
                 multiple
                 use-chips
-                input-debounce="0"
                 label="Choose one or more categories:"
                 :options="purchaserCategoryOptions"
                 option-value="id"
                 option-label="name"
                 style="width: 100%"
+                behavior="dialog"
+                standout
+                popup-content-style="max-height: 400px"
+                virtual-scroll-slice-size="100"
               >
                 <template v-slot:option="scope">
                   <q-item v-bind="scope.itemProps">
@@ -194,13 +197,17 @@
                 stack-label
                 multiple
                 use-chips
-                input-debounce="0"
                 label="Choose one or more categories:"
                 :options="splitterCategoryOptions"
                 option-value="id"
                 option-label="name"
                 style="width: 100%"
+                behavior="dialog"
+                standout
+                popup-content-style="max-height: 400px"
+                virtual-scroll-slice-size="100"
               >
+                
                 <template v-slot:option="scope">
                   <q-item v-bind="scope.itemProps">
                     <q-item-section class="col-9">
