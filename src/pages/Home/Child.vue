@@ -239,14 +239,18 @@
         </div>
       </div>
       <q-separator></q-separator>
-      <p class="q-py-lg">Click on a budget above to choose categories</p>
+      <p class="q-mt-lg q-pa-md text-bold">Click on a budget above to choose categories</p>
+      <pre>{{ store.state.transactionAmount > 0 }}</pre>
+      <pre>{{ data.purchaserAmountRemaining === 0 }}</pre>
+      <pre>{{ data.splitterAmountRemaining === 0 }}</pre>
+      <pre>{{ store.state.purchaserCategorySplits.length }}</pre>
+      <pre>{{ store.state.splitterCategorySplits.length }}</pre>
       <div v-if="allowNextStep" class="q-mb-xl">
         <q-btn
           padding="xs lg"
           class="q-mb-xl"
           color="primary"
-          to="/home/child/grandchild"
-          @click="checkCategoriesinEachBudget()"
+          @click="confirmCategorization"
           label="Final Step"
         />
       </div>
@@ -258,7 +262,7 @@
 <script>
 import { reactive, onMounted, inject, computed, onBeforeUnmount } from 'vue'
 import { useRouter } from 'vue-router'
-import { dom } from 'quasar'
+import { useQuasar } from 'quasar'
 import CurrencyInput from '../../components/CurrencyInput.vue'
 import CardTransactionSplit from 'src/components/CardTransactionSplit.vue'
 
@@ -275,6 +279,8 @@ export default {
       purchaserAmountRemaining: null
     })
 
+    const $q = useQuasar()
+    
     const store = inject('store')
 
     const router = useRouter()
@@ -355,6 +361,7 @@ export default {
     })
 
     function checkCategoriesinEachBudget() {
+
       if (purchaserCategoryOptions.value && splitterCategoryOptions.value) {
         if (store.state.purchasingBudget) {
           const search = store.state.purchasingBudget.name + ' | YNABFS'
@@ -373,10 +380,31 @@ export default {
       }
     }
 
+    function confirmCategorization () {
+      if (store.state.purchaserCategorySplits.length === 0 || store.state.splitterCategorySplits.length === 0) {
+        $q.dialog({
+          title: 'Confirm',
+          message: 'Are you sure you would like to leave transactions uncategorized?',
+          cancel: true,
+          persistent: true
+          }).onOk(() => {
+            checkCategoriesinEachBudget()
+            router.push('/home/child/grandchild')
+          }).onCancel(() => {
+           console.log('>>>> Cancel')
+          }).onDismiss(() => {
+           console.log('I am triggered on both OK and Cancel')
+          })
+      } else {
+          checkCategoriesinEachBudget()
+          router.push('/home/child/grandchild')
+      }
+    }
+
     const allowNextStep = computed(() => {
       if (
-          (store.state.purchaserAmount === 0 || store.state.purchaserCategorySplits.length > 0) &&
-          (store.state.splitterAmount === 0 || store.state.splitterCategorySplits.length > 0) &&
+          //(store.state.purchaserAmount === 0 || store.state.purchaserCategorySplits.length > 0) &&
+          //(store.state.splitterAmount === 0 || store.state.splitterCategorySplits.length > 0) &&
           store.state.transactionAmount > 0 &&
           data.purchaserAmountRemaining === 0 && 
           data.splitterAmountRemaining === 0
@@ -388,21 +416,26 @@ export default {
     })
 
     function calculateAmountRemaining () {
-      if (store.state.purchaserCategorySplits.length === 1) {
-        data.purchaserAmountRemaining = 0
-      } else if (store.state.purchaserCategorySplits.length > 1) {
+      if (store.state.purchaserCategorySplits.length> 1) {
         data.purchaserAmountRemaining = Number(((store.state.purchaserAmount * 100) - (store.purchaserCategoryTotal.value * 100)) / 100)
-      } else if (store.state.purchaserAmount === 0) {
+      } else if (
+        store.state.purchaserCategorySplits.length === 0 ||
+        store.state.purchaserCategorySplits.length === 1 ||
+        store.state.purchaserAmount === 0
+        ) {
         data.purchaserAmountRemaining = 0
       } else {
         data.purchaserAmountRemaining = null
       }
 
-      if (store.state.splitterCategorySplits.length === 1) {
-        data.splitterAmountRemaining = 0
-      } else if (store.state.splitterCategorySplits.length > 1) {
+
+      if (store.state.splitterCategorySplits.length > 1) {
         data.splitterAmountRemaining = Number(((store.state.splitterAmount * 100) - (store.splitterCategoryTotal.value * 100)) / 100)
-      } else if (store.state.purchaserAmount === 0) {
+      } else if (
+          store.state.splitterCategorySplits.length === 0 ||
+          store.state.splitterCategorySplits.length === 1 ||
+          store.state.purchaserAmount === 0
+        ) {
         data.splitterAmountRemaining = 0
       } else {
         data.splitterAmountRemaining = null
@@ -410,7 +443,6 @@ export default {
     }
 
     function validateAndSave () {
-        const { height, width } = dom
         if (store.state.purchaserCategorySplits.length === 1) {
           store.state.purchaserCategorySplits[0].amount = Number(store.state.purchaserAmount)
         } 
@@ -425,7 +457,8 @@ export default {
       allowNextStep,
       validateAndSave,
       calculateAmountRemaining,
-      checkCategoriesinEachBudget
+      checkCategoriesinEachBudget,
+      confirmCategorization
     }
   }
 }

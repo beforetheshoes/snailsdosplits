@@ -138,15 +138,17 @@ export default {
     const router = useRouter()
 
     onMounted(() => {
-      if (!store.state.purchasingBudget || !store.state.ynab.token) {
-        router.push('/home/')
-      }
-
-      if (store.state.splitterCategorySplits && store.state.purchaserCategorySplits) {
-        getPurchaserSubtransactions()
-        getSplitterSubtransactions()
-        finalValidation()
-      }
+        if (!store.state.purchasingBudget || !store.state.ynab.token) {
+            router.push('/home/')
+        } else {
+            getPurchaserSubtransactions()
+            
+            if (store.state.splitterCategorySplits.length > 0) {
+                getSplitterSubtransactions()
+            }
+                       
+            finalValidation()
+        }
     })
 
 
@@ -185,6 +187,11 @@ export default {
     })
 
     function getPurchaserSubtransactions() {
+        let splitterCategoryToFind = store.state?.splittingBudget['name'] + " | YNABFS"
+        let splitterCategory = store.state?.allPurchaserCategories.find(o => o.name === splitterCategoryToFind)
+
+        // If categories have been chosen for the purchasing budget, make the subtransactions
+        // equal to the categories that were assigned more than $0 and the splitting budget's category
         if (store.state.purchaserCategorySplits.length >= 1) {
             for (let i = 0; i < store.state.purchaserCategorySplits.length; i++) {
                 if (store.state.purchaserCategorySplits[i].amount > 0) {
@@ -194,19 +201,34 @@ export default {
                     })
                 }
             }
-            let splitterCategoryToFind = store.state.splittingBudget['name'] + " | YNABFS"
-            let splitterCategory = store.state.allPurchaserCategories.find(o => o.name === splitterCategoryToFind)
             if (splitterCategory) {
                 data.purchaserSubtransactions.push({
                     amount: -(store.state.splitterAmount * 10),
                     category_id: splitterCategory.id
                 })
             }
-        } else if (store.state.purchaserCategorySplits.length === 0 && store.state.purchaserAmount === 0) {
-            let splitterCategoryToFind = store.state.splittingBudget['name'] + " | YNABFS"
-            let splitterCategory = store.state.allPurchaserCategories.find(o => o.name === splitterCategoryToFind)
+        // If no categories where chosen for the purchasing budget:
+        } else if (store.state.purchaserCategorySplits.length === 0) {
             if (splitterCategory) {
-                data.purchaserCategoryId = splitterCategory.id
+                // If it's because the purchaser doesn't owe anything,
+                // just make the Category ID equal to the splitting budget's category
+                if (store.state.purchaserAmount === 0) {
+                    data.purchaserCategoryId = splitterCategory.id
+                // If it's because the purchaser does owe a share but it hasn't been categorized,
+                // Make the subtransactions equal to the uncategorized portion of the purchaser's share
+                // and the splitting budget's category
+                } else {
+                    data.purchaserSubtransactions.push(
+                    {
+                        amount: -(store.state.purchaserAmount * 10),
+                        category_id: null
+                    },
+                    {
+                        amount: -(store.state.splitterAmount * 10),
+                        category_id: splitterCategory.id
+                    }
+                )
+                }
             }
         } else {
             return false
@@ -347,18 +369,18 @@ export default {
         if (
                 store.state.transactionAccount.id &&
                 store.state.transactionAmount &&
-                store.state.transactionPayee.id &&
+                //store.state.transactionPayee.id &&
                 store.state.transactionPayee.name &&
                 memo.value &&
                 cleared.value &&
                 date.value &&
                 (
-                    (data.purchaserCategoryId === null && data.purchaserSubtransactions.length > 1) || 
+                    (data.purchaserCategoryId === null && data.purchaserSubtransactions.length !== 1) || 
                     (store.state.purchaserAmount === 0 && store.state.splitterAmount === store.state.transactionAmount && data.purchaserSubtransactions.length === 0)
                 ) &&
                 store.state.purchasersAccountInSplittersBudget.id &&
                 (
-                    (splitterCategoryId.value === null && data.splitterSubtransactions.length > 1) || 
+                    (splitterCategoryId.value === null && data.splitterSubtransactions.length !== 1) || 
                     (splitterCategoryId.value && data.splitterSubtransactions.length === 0)
                 ) &&
                 store.state.splitterAmount &&

@@ -41,7 +41,7 @@
                         <q-icon v-else name="info" />
                         </q-item-section>
                     </q-item>
-                    <q-item>
+                    <!-- <q-item>
                         <q-item-section>
                         <q-item-label lines="1">Payee ID</q-item-label>
                         <q-item-label caption>{{ store.state.transactionPayee.id }}</q-item-label>
@@ -51,7 +51,7 @@
                         <q-icon v-if="store.state.transactionPayee.id" name="info" color="green" />
                         <q-icon v-else name="info" />
                         </q-item-section>
-                    </q-item>
+                    </q-item> -->
                     <q-item>
                         <q-item-section>
                         <q-item-label lines="1">Payee Name</q-item-label>
@@ -70,11 +70,8 @@
                         </q-item-section>
 
                         <q-item-section side>
-                        <q-icon v-if="(purchaserCategoryId && 
-                                        subtransactions.length === 0) || 
-                                      (!purchaserCategoryId && 
-                                        subtransactions.length > 0
-                                      )" 
+                        <q-icon v-if="(purchaserCategoryId && subtransactions.length === 0) || 
+                                      (!purchaserCategoryId && subtransactions.length !== 1)" 
                                 name="info" 
                                 color="green" />
                         <q-icon v-else name="info" />
@@ -115,11 +112,8 @@
                         </q-item-section>
 
                         <q-item-section side>
-                        <q-icon v-if="(purchaserCategoryId && 
-                                        subtransactions.length === 0) || 
-                                      (!purchaserCategoryId && 
-                                        subtransactions.length > 0
-                                      )" 
+                        <q-icon v-if="(purchaserCategoryId && subtransactions.length === 0) || 
+                                      (!purchaserCategoryId && subtransactions.length !== 1)" 
                                 name="info" 
                                 color="green" />
                         <q-icon v-else name="info" />

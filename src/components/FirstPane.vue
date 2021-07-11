@@ -58,10 +58,12 @@
         option-value="id"
         option-label="name"
         style="width: 100%"
+        @new-value="createValue"
         use-input
         @filter="filterFnOptions"
         :disabled="disabledIfConditions"
       />
+      <pre>{{ store.state?.transactionPayee }}</pre>
       <q-input 
         class="q-my-md float-md-end" 
         filled 
@@ -195,6 +197,15 @@ export default {
       })
     }
 
+    function createValue(val, done) {
+      done(
+        {
+        id: null,
+        name: val 
+        }
+      , 'add-unique')
+    }
+
     const disabledIfConditions = computed(() => {
       if (store.state.purchasingBudget) {
         if (store.state.purchasingBudget.length < 1 || store.state.unapprovedUpdateTransactionId) {
@@ -228,7 +239,8 @@ export default {
       filterFnAccounts,
       disabledIfConditions,
       cardBudgetChooserLabel,
-      dateOptionsFn
+      dateOptionsFn, 
+      createValue
     }
   }
 }
