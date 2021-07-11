@@ -7,7 +7,7 @@
       </template>
     </page-header>
 
-    <page-body class="text-center" style="min-height:1000px">
+    <page-body class="text-center">
 
       <q-btn 
         @click="data.cardTransactionSplit = true"
@@ -240,7 +240,7 @@
       </div>
       <q-separator></q-separator>
       <p class="q-py-lg">Click on a budget above to choose categories</p>
-      <div v-if="allowNextStep">
+      <div v-if="allowNextStep" class="q-mb-xl">
         <q-btn
           padding="xs lg"
           class="q-mb-xl"
@@ -250,6 +250,7 @@
           label="Final Step"
         />
       </div>
+      <div v-else class="q-mb-xl"></div>
     </page-body>
   </page>
 </template>
@@ -257,6 +258,7 @@
 <script>
 import { reactive, onMounted, inject, computed, onBeforeUnmount } from 'vue'
 import { useRouter } from 'vue-router'
+import { dom } from 'quasar'
 import CurrencyInput from '../../components/CurrencyInput.vue'
 import CardTransactionSplit from 'src/components/CardTransactionSplit.vue'
 
@@ -408,9 +410,10 @@ export default {
     }
 
     function validateAndSave () {
+        const { height, width } = dom
         if (store.state.purchaserCategorySplits.length === 1) {
           store.state.purchaserCategorySplits[0].amount = Number(store.state.purchaserAmount)
-        }
+        } 
         calculateAmountRemaining()
     }
 

@@ -1,6 +1,4 @@
 import { reactive, computed } from 'vue'
-//import { store } from 'quasar/wrappers'
-
 
 const state = reactive({
     ynab: {
@@ -89,7 +87,6 @@ const methods = {
                     payee.name !== 'Reconciliation Balance Adjustment'
                 )
             })
-            console.log(res.data.payees) 
         }).catch((err) => {
             state.error = err.error.detail
         }).finally(() => {

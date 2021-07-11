@@ -1,6 +1,6 @@
 <template>
 
-    <q-layout view="lHh lpr lFf" :style="desktopStyle" :class="desktopClass">
+    <q-layout view="lHh lpr lFf" :style="desktopStyle" :class="desktopClass" style="height: 90vh">
       <q-footer bordered class="bg-deep-purple-9 text-white" :class="desktopClass" :style="desktopStyle">
         <q-tabs  
             active-color="grey" 
