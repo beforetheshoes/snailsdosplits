@@ -3,7 +3,7 @@
     
     <page-header>
       <template #title>
-        YNAB For Snails
+        Snails Do Splits!
       </template>
     </page-header>
 
@@ -164,9 +164,9 @@ export default {
 
     const memo = computed(() => {
         if (store.state.transactionNotes === null) {
-            return "No memo provided [YNAB For Snails]"
+            return "No memo provided [Snails Do Splits!]"
         } else {
-            return store.state.transactionNotes + " [YNAB For Snails]"
+            return store.state.transactionNotes + " [Snails Do Splits!]"
         }
     })
 
@@ -187,7 +187,7 @@ export default {
     })
 
     function getPurchaserSubtransactions() {
-        let splitterCategoryToFind = store.state?.splittingBudget['name'] + " | YNABFS"
+        let splitterCategoryToFind = store.state?.splittingBudget['name'] + " | SDS"
         let splitterCategory = store.state?.allPurchaserCategories.find(o => o.name === splitterCategoryToFind)
 
         // If categories have been chosen for the purchasing budget, make the subtransactions
@@ -308,7 +308,7 @@ export default {
                 account_id: store.state.splittersAccountInPurchasersBudget.id,
                 date: date.value,
                 amount: store.state.splitterAmount * 10,
-                payee_name: "YNABFS Split",
+                payee_name: "SDS Split",
                 category_id: store.state.splittersCategoryInPurchasersBudget.id,
                 memo: memo.value,
                 cleared: "cleared"

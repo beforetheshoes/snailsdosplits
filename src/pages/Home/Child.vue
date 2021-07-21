@@ -3,7 +3,7 @@
     
     <page-header>
       <template #title>
-        YNAB For Snails
+        Snails Do Splits!
       </template>
     </page-header>
 
@@ -354,7 +354,7 @@ export default {
       if (store.state.allPurchaserCategories.length >= 0) {
         const result = []
         const map = new Map()
-        const searchRegex = new RegExp(/.* [|] YNABFS/, 'i')
+        const searchRegex = new RegExp(/.* [|] SDS/, 'i')
         for (const item of store.state.allPurchaserCategories) {
           if (!searchRegex.test(item.name)) {
             if (!map.has(item.id)) {
@@ -378,7 +378,7 @@ export default {
       if (store.state.allSplitterCategories.length >= 0) {
         const result = []
         const map = new Map()
-        const searchRegex = new RegExp(/.* [|] YNABFS/, 'i')
+        const searchRegex = new RegExp(/.* [|] SDS/, 'i')
         for (const item of store.state.allSplitterCategories) {
           if (!searchRegex.test(item.name)) {
             if (!map.has(item.id)) {
@@ -402,17 +402,17 @@ export default {
 
       if (purchaserCategoryOptions.value && splitterCategoryOptions.value) {
         if (store.state.purchasingBudget) {
-          const search = store.state.purchasingBudget.name + ' | YNABFS'
-          const splitYNABFS = store.state.allSplitterCategories.find(o => o.name === search)
-            if (splitYNABFS) {
-                store.state.purchasersCategoryInSplittersBudget = splitYNABFS
+          const search = store.state.purchasingBudget.name + ' | SDS'
+          const splitSDS = store.state.allSplitterCategories.find(o => o.name === search)
+            if (splitSDS) {
+                store.state.purchasersCategoryInSplittersBudget = splitSDS
             } 
         }  
         if (store.state.splittingBudget) {
-          const search = store.state.splittingBudget.name + ' | YNABFS'
-          const purchaseYNABFS = store.state.allPurchaserCategories.find(o => o.name === search)
-            if (purchaseYNABFS) {
-                store.state.splittersCategoryInPurchasersBudget = purchaseYNABFS
+          const search = store.state.splittingBudget.name + ' | SDS'
+          const purchaseSDS = store.state.allPurchaserCategories.find(o => o.name === search)
+            if (purchaseSDS) {
+                store.state.splittersCategoryInPurchasersBudget = purchaseSDS
             } 
         }  
       }

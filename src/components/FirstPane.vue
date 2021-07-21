@@ -173,7 +173,7 @@ export default {
       if (store.state.purchasingBudget && store.state.accounts.length === 0) {
         store.methods.getPayeesAndAccounts()
       } else if (store.state.accounts.length > 0) {
-        const searchRegex = new RegExp(/.* [|] YNABFS/, 'g')
+        const searchRegex = new RegExp(/.* [|] SDS/, 'g')
         let obj = store.state.accounts.filter(function (account) { return !searchRegex.test(account.name) })
         //data.accountOptions = store.state.accounts
         data.accountOptions = obj
@@ -182,7 +182,7 @@ export default {
       }
       if (val === '') {
         update(() => {
-        const searchRegex = new RegExp(/.* [|] YNABFS/, 'i')
+        const searchRegex = new RegExp(/.* [|] SDS/, 'i')
         let obj = store.state.accounts.filter(function (account) { return !searchRegex.test(account.name) })
           //data.accountOptions = store.state.accounts
           data.accountOptions = obj

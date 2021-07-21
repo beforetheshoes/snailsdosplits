@@ -3,7 +3,7 @@
     
     <page-header>
       <template #title>
-        YNAB For Snails
+        Snails Do Splits!
       </template>
     </page-header>
 

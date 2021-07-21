@@ -116,7 +116,7 @@ const methods = {
 
     getUnapprovedPurchaserTransactions() {
         state.api.transactions.getTransactions(state.purchasingBudget.id, undefined, "unapproved").then((res) => {
-            const searchRegex = new RegExp(/.*\[YNAB For Snails\]/, 'i')
+            const searchRegex = new RegExp(/.*\[Snails Do Splits!\]/, 'i')
             state.unapprovedPurchaserTransactions = res.data.transactions.filter(transaction => (!searchRegex.test(transaction.memo)))
         }).catch((err) => {
             state.error = err.error.detail
@@ -146,20 +146,20 @@ const methods = {
 
     checkSplittersAccountInPurchasersBudget() {
         if (state.splittingBudget.name) {
-            const search = state.splittingBudget.name + ' | YNABFS'
-            const splitYNABFS = state.accounts.find(o => o.name === search)
-            if (splitYNABFS) {
-                state.splittersAccountInPurchasersBudget = splitYNABFS
+            const search = state.splittingBudget.name + ' | SDS'
+            const splitSDS = state.accounts.find(o => o.name === search)
+            if (splitSDS) {
+                state.splittersAccountInPurchasersBudget = splitSDS
             } 
         } 
     },
 
     checkPurchasersAccountInSplittersBudget() {
         if (state.purchasingBudget.name) {
-            const search = state.purchasingBudget.name + ' | YNABFS'
-            const splitYNABFS = state.splittersAccounts.find(o => o.name === search)
-            if (splitYNABFS) {
-                state.purchasersAccountInSplittersBudget = splitYNABFS
+            const search = state.purchasingBudget.name + ' | SDS'
+            const splitSDS = state.splittersAccounts.find(o => o.name === search)
+            if (splitSDS) {
+                state.purchasersAccountInSplittersBudget = splitSDS
             } 
         } 
     },

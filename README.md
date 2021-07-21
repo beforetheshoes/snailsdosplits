@@ -1,41 +1,77 @@
-<h3><b>Scenario:</b></h3>
+    <div class="text-center q-mt-lg">
+    <img src="https://api.youneedabudget.com/papi/works_with_ynab.svg" alt="Works with YNAB logo">
+    </div>
+    <div class="q-pa-sm q-mb-xl">
+    <h5>Note:</h5>
+    <p>This application integrates with YNAB (You Need a Budget) but was not created by them. Checkout YNAB at <a href="https://app.youneedabudget.com/" target="_blank">https://app.youneedabudget.com</a></p>
+    <h5>Privacy Policy:</h5>
+    <p>Snails Do Splits! does not collect any data. During use, a secure access token is obtained from YNAB using OAuth and transactions are handled through API requests to their application. These requests are completed through a secure browser connection using HTTPS. No data will be stored or collected by Snails Do Splits!</p>
+    <h5>Scenario:</h5>
+    <p>
+        Two people with different bank accounts and different budgets in YNAB (but using the same YNAB account) split purchases. 
+        These purchases need to be entered into both budgets and you need to be able to audit the purchase history in case the 
+        numbers don't match up (which they always should). Previously, every shared purchase required the purchaser to enter the 
+        original purchase into their YNAB budget, then move money from one category to another in the other person's budget, and 
+        then enter the transaction into Splitwise as an intermediary of sorts, for reference in case of discrepancies.
+    </p>
 
-Two people with different bank accounts and different budgets in YNAB (but using the same YNAB account) split purchases. These purchases need to be entered into both budgets and you need to be able to audit the purchase history in case the numbers don't match up (which they always should). Previously, every shared purchase required the purchaser to enter the original purchase into their YNAB budget, then move money from one category to another in the other person's budget, and then enter the transaction into Splitwise as an intermediary of sorts, for reference in case of discrepancies.
+    <h5>Requirements:</h5>
+    <ol>
+        <li>Both people must be using the same account with separate budgets for each</li>
+        <li>Both budgets must have an un-linked cash account and a category with the other person's budget name + " | SDS". Example:</li>
+        <ul>
+        <li>My name is Ryan and that's the name of my budget.</li>
+        <li>My partner must have a cash account named "Ryan | SDS" and a category named "Ryan | SDS"</li>
+        <li>If my budget was called "Ryan Budget", the cash account and category would have to be named "Ryan Budget | SDS"</li>
+        <li>In my budget, I have a cash account and a category with her budget name + " | SDS"</li>
+        </ul>
+    </ol>
 
+    <h5>Transactions:</h5>
+    <p>
+        Once this is set up, you can use the app. When you complete a transaction in the app, it will create three transactions:
+    </p>
+    <ol>
+        <li>The main transaction:</li>
+        <ul>
+        <li>If I buy groceries from the store, the main transaction is the payment I made to the store.</li>
+        <li>The payee will be the store and the outflow will be the full outflow. This should look just like it would if the transaction 
+        automatically synced to YNAB once the payment cleared.</li>
+        <li>The transaction's categories are automatically split up between the categories you selected for your own budget, and the 
+        share that you specify for the other person's budget.</li>
+        <li>The other person's share is categorized as the category you initially created (i.e. "[budget name] | SDS")</li>
+        </ul>
+        <li>The balancing transaction:</li>
+        <ul>
+        <li>This transaction zeroes out the category balance that was just created on the purchaser's budget by creating an inflow 
+        transaction for the other person's share of the purchase.</li>
+        <li>That inflow is put into the cash account you created initially with the other person's budget name + "| SDS".</li>
+        <li>The reasoning behind this is that categories are hard to audit and they don't persist between months. Some may consider it 
+        bad practice to have an account in YNAB with a positive balance of money that you don't actually have. That's understandable 
+        but I'm doing it anyway.</li>
+        </ul>
+        <li>The other share's transaction:</li>
+        <ul>
+        <li>This is the transaction on the other person's budget for their share of the purchase. It is an outflow transaction, using 
+        whichever categories were specified for their share.</li>
+        </ul>
+    </ol>
 
-<h3><b>Requirements:</b></h3>
-
-1. Both people must be using the same account with separate budgets for each
-2. Both budgets must have an un-linked cash account and a category with the other person's budget name + " | YNABFS". Example:
-    - My name is Ryan and that's the name of my budget. 
-    - My partner must have a cash account named "Ryan | YNABFS" and a category named "Ryan | YNABFS"
-    - If my budget was called "Ryan Budget", the cash account and category would have to be named "Ryan Budget | YNABFS"
-    - In my budget, I have a cash account and a category with her budget name + " | YNABFS"
-
-
-<h3><b>Transactions:</b></h3>
-
-Once this is set up, you can use the app. When you complete a transaction in the app, it will create three transactions:
-
-1. The main transaction: 
-    - If I buy groceries from the store, the main transaction is the payment I made to the store. 
-    - The payee will be the store and the outflow will be the full outflow. This should look just like it would if the transaction automatically synced to YNAB once the payment cleared.
-    - The transaction's categories are automatically split up between the categories you selected for your own budget, and the share that you specify for the other person's budget.
-    - The other person's share is categorized as the category you initially created (i.e. "[budget name] | YNABFS")
-2. The balancing transaction: 
-    - This transaction zeroes out the category balance that was just created on the purchaser's budget by creating an inflow transaction for the other person's share of the purchase. 
-    - That inflow is put into the cash account you created initially with the other person's budget name + "| YNABFS". 
-    - The reasoning behind this is that categories are hard to audit and they don't persist between months. Some may consider it bad practice to have an account in YNAB with a positive balance of money that you don't actually have. That's understandable but I'm doing it anyway.
-3. The other share's transaction:
-    - This is the transaction on the other person's budget for their share of the purchase. It is an outflow transaction, using whichever categories were specified for their share.
-
-
-<h3><b>Settling Up:</b></h3>
-
-When it's time to settle up, the person who owes money will be the person who has a negative balance in their account named after the other person's budget. When the payment is made:
-
-- The person who is settling up will change the settling up YNAB transaction to be a transfer from whichever account they paid with to the cash account with the other person's budget name. This is not a separate transaction from the payment itself. Let's say you Venmo the other person from your checking account. When the transaction shows up in YNAB, you would change the Payee from "Venmo" to "Transfer from: [budget name] | YNABFS". Because it's a transfer, you won't need to categorize it. This is because you already categorized each purchase as they were made.
-- The person receiving the money will do the same. When the inflow transaction shows up in the receiving account, you will change the Payee to "Transfer from: [budget name] | YNABFS". This will zero out the balance on that account and you will be settled up.
+    <h5>Settling Up:</h5>
+    <p>
+        When it's time to settle up, the person who owes money will be the person who has a negative balance in their account named 
+        after the other person's budget. When the payment is made:
+    </p>
+    <ul>
+        <li>The person who is settling up will change the settling up YNAB transaction to be a transfer from whichever account they 
+        paid with to the cash account with the other person's budget name. This is not a separate transaction from the payment 
+        itself. Let's say you Venmo the other person from your checking account. When the transaction shows up in YNAB, you would 
+        change the Payee from "Venmo" to "Transfer from: [budget name] | SDS". Because it's a transfer, you won't need to categorize 
+        it. This is because you already categorized each purchase as they were made.</li>
+        <li>The person receiving the money will do the same. When the inflow transaction shows up in the receiving account, you will change 
+        the Payee to "Transfer from: [budget name] | SDS". This will zero out the balance on that account and you will be settled up.</li>
+    </ul>
+    </div>
 
 
 <h3><b>Build information:</b></h3>

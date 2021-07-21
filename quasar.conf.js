@@ -142,9 +142,9 @@ module.exports = configure(function (ctx) {
       },
 
       manifest: {
-        name: `ynabforsnails`,
-        short_name: `ynabforsnails`,
-        description: `YNAB For Snails`,
+        name: `snailsdosplits`,
+        short_name: `snailsdosplits`,
+        description: `Snails Do Splits!`,
         display: 'standalone',
         orientation: 'portrait',
         background_color: '#ffffff',
@@ -209,7 +209,7 @@ module.exports = configure(function (ctx) {
       builder: {
         // https://www.electron.build/configuration/configuration
 
-        appId: 'ynabforsnails'
+        appId: 'snailsdosplits'
       },
 
       // "chain" is a webpack-chain object https://github.com/neutrinojs/webpack-chain

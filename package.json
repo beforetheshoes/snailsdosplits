@@ -1,8 +1,8 @@
 {
-  "name": "ynabforsnails",
+  "name": "snailsdosplits",
   "version": "0.0.1",
   "description": "Split purchases between YNAB budgets",
-  "productName": "YNAB For Snails",
+  "productName": "Snails Do Splits!",
   "author": "Ryan Williams <oneryanleewilliams@gmail.com>",
   "private": true,
   "scripts": {
