@@ -194,7 +194,7 @@ export default {
         // equal to the categories that were assigned more than $0 and the splitting budget's category
         if (store.state.purchaserCategorySplits.length >= 1) {
             for (let i = 0; i < store.state.purchaserCategorySplits.length; i++) {
-                if (store.state.purchaserCategorySplits[i].amount > 0) {
+                if (Math.abs(store.state.purchaserCategorySplits[i].amount) > 0) {
                     data.purchaserSubtransactions.push({ 
                         amount: -(store.state.purchaserCategorySplits[i].amount * 10),
                         category_id: store.state.purchaserCategorySplits[i].id,
@@ -238,7 +238,7 @@ export default {
     function getSplitterSubtransactions() {
         if (store.state.splitterCategorySplits.length > 1) {
             for (let i = 0; i < store.state.splitterCategorySplits.length; i++) {
-                if (store.state.splitterCategorySplits[i].amount > 0) {
+                if (Math.abs(store.state.splitterCategorySplits[i].amount) > 0) {
                     data.splitterSubtransactions.push({ 
                         amount: -(store.state.splitterCategorySplits[i].amount * 10),
                         category_id: store.state.splitterCategorySplits[i].id,

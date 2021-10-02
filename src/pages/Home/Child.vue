@@ -14,14 +14,14 @@
         style="width: 90%"
         class="q-my-md"
       >
-        Click to split ${{ store.state.transactionAmount / 100 }}
+        Click to split ${{ (store.state.transactionAmount / 100).toFixed(2) }}
       </q-btn>
       <card-transaction-split v-model="data.cardTransactionSplit"
       ></card-transaction-split>
 
-      <div class="container" v-if="store.state.purchaserAmount >= 0 && store.state.splitterAmount >= 0">
+      <div class="container" v-if="Math.abs(store.state.purchaserAmount) >= 0 && Math.abs(store.state.splitterAmount) > 0">
         <q-chip 
-          v-if="data.purchaserAmountRemaining < 0 || data.purchaserAmountRemaining > store.state.purchaserAmount"
+          v-if="Math.abs(data.purchaserAmountRemaining) < 0 || Math.abs(data.purchaserAmountRemaining) > Math.abs(store.state.purchaserAmount)"
           square 
           color="red" 
           text-color="white" 
@@ -34,13 +34,13 @@
           class="q-mt-md" 
           clickable 
           v-ripple 
-          @click="store.state.purchaserAmount > 0 ? data.cardPurchaserCategories = true : data.cardPurchaserCategories = false">
+          @click="Math.abs(store.state.purchaserAmount) > 0 ? data.cardPurchaserCategories = true : data.cardPurchaserCategories = false">
           <div class="col-6 text-left">
             <span class="q-pl-lg text-bold">{{ store.state.purchasingBudget['name'] }}</span>
           </div>
           <div class="col-6 text-right">
             <q-badge class="q-mr-sm" align="middle" color="deep-purple-5">
-              ${{ store.state.purchaserAmount > 0 ? (store.state.purchaserAmount / 100).toFixed(2) : 0 }}
+              ${{ Math.abs(store.state.purchaserAmount) > 0 ? (store.state.purchaserAmount / 100).toFixed(2) : 0 }}
             </q-badge>
           </div>
         </q-item>
@@ -116,7 +116,6 @@
                   :options="{ currencyDisplay: 'symbol',
                               currency: 'USD', 
                               autoDecimalDigits: true, 
-                              valueRange: { min: 0, max: store.state.purchaserAmount }, 
                               exportValueAsInteger: true
                             }"
                   @blur="calculateAmountRemaining()"
@@ -151,7 +150,7 @@
 
         <q-separator class="q-my-sm"></q-separator>
         <q-chip 
-          v-if="data.splitterAmountRemaining < 0 || data.splitterAmountRemaining > store.state.splitterAmount"
+          v-if="Math.abs(data.splitterAmountRemaining) < 0 || Math.abs(data.splitterAmountRemaining) > Math.abs(store.state.splitterAmount)"
           square 
           color="red" 
           text-color="white" 
@@ -164,13 +163,13 @@
           class="q-mb-md" 
           clickable 
           v-ripple 
-          @click="store.state.splitterAmount > 0 ? data.cardSplitterCategories = true : data.cardSplitterCategories = false">
+          @click="Math.abs(store.state.splitterAmount) > 0 ? data.cardSplitterCategories = true : data.cardSplitterCategories = false">
           <div class="col-6 text-left">
             <span class="q-pl-lg text-bold">{{ store.state.splittingBudget['name'] }}</span>
           </div>
           <div class="col-6 text-right">
             <q-badge class="q-mr-sm" align="middle" color="deep-purple-5">
-              ${{ store.state.splitterAmount > 0 ? (store.state.splitterAmount / 100).toFixed(2) : 0 }}
+              ${{ Math.abs(store.state.splitterAmount) > 0 ? (store.state.splitterAmount / 100).toFixed(2) : 0 }}
             </q-badge>
           </div>
         </q-item>
@@ -246,7 +245,6 @@
                   :options="{ currencyDisplay: 'hidden', 
                               currency: 'USD', 
                               autoDecimalDigits: true, 
-                              valueRange: { min:0, max: store.state.splitterAmount },
                               exportValueAsInteger: true 
                             }"
                   @blur="calculateAmountRemaining()"
@@ -399,7 +397,6 @@ export default {
     })
 
     function checkCategoriesinEachBudget() {
-
       if (purchaserCategoryOptions.value && splitterCategoryOptions.value) {
         if (store.state.purchasingBudget) {
           const search = store.state.purchasingBudget.name + ' | SDS'
@@ -443,7 +440,7 @@ export default {
       if (
           //(store.state.purchaserAmount === 0 || store.state.purchaserCategorySplits.length > 0) &&
           //(store.state.splitterAmount === 0 || store.state.splitterCategorySplits.length > 0) &&
-          store.state.transactionAmount > 0 &&
+          Math.abs(store.state.transactionAmount) > 0 &&
           data.purchaserAmountRemaining === 0 && 
           data.splitterAmountRemaining === 0
           ) {

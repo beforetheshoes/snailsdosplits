@@ -92,8 +92,7 @@
       <currency-input
         v-if="!store.state.unapprovedUpdateTransactionId"
         v-model="store.state.transactionAmount"
-        :options="{ currency: 'USD', autoDecimalDigits: true, valueRange: {min:0,max:undefined}, autoSign:true, exportValueAsInteger: true}"
-        class="q-my-md"
+        :options="{ currency: 'USD', autoDecimalDigits: true, autoSign:true, exportValueAsInteger: true}"
       />
       <q-input
         v-else
@@ -102,6 +101,8 @@
         filled
         class="text-weight-thin"
       ></q-input>
+          <p class="text-center">Note: If transaction is a credit, enter amount as negative number.</p>
+      <q-separator class="q-my-md" />
       <div class="q-gutter-sm text-center">
         <q-checkbox 
           left-label 

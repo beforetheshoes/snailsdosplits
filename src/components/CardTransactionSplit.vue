@@ -108,10 +108,10 @@ export default {
 
     function validateAndSaveCard() {
       if (
-          purchaserRatio.value <= store.state.transactionAmount && 
-          purchaserRatio.value >= 0 && 
+          Math.abs(purchaserRatio.value) <= Math.abs(store.state.transactionAmount) && 
+          Math.abs(purchaserRatio.value) >= 0 && 
           purchaserRatio.value !== null &&
-          splitterRatio.value > 0
+          Math.abs(splitterRatio.value) > 0
          ) {
         store.state.purchaserAmount = Number(purchaserRatio.value)
         store.state.splitterAmount = Number(splitterRatio.value)
